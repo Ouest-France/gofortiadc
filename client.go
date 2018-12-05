@@ -1,4 +1,4 @@
-package goforti
+package gofortiadc
 
 import (
 	"net/http"
