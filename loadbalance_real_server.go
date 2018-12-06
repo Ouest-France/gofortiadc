@@ -158,13 +158,13 @@ func (c *Client) LoadbalanceUpdateRealServer(rs LoadbalanceRealServer) error {
 }
 
 // LoadbalanceDeleteRealServer deletes an existing real server
-func (c *Client) LoadbalanceDeleteRealServer(rs string) error {
+func (c *Client) LoadbalanceDeleteRealServer(name string) error {
 
-	if len(rs) == 0 {
+	if len(name) == 0 {
 		return errors.New("real server name cannot be empty")
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/api/load_balance_real_server/%s", c.Address, rs), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/api/load_balance_real_server/%s", c.Address, name), nil)
 	if err != nil {
 		return err
 	}
