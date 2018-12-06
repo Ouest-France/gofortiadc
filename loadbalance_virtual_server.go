@@ -37,7 +37,7 @@ type LoadbalanceVirtualServerReq struct {
 	Persistence          string `json:"persistence"`
 	Method               string `json:"method"`
 	Pool                 string `json:"pool"`
-	SrcPool              string `json:"src_pool"`
+	SrcPool              string `json:"source-pool-list"`
 	ErrorPage            string `json:"error-page"`
 	WafProfile           string `json:"waf-profile"`
 	AuthPolicy           string `json:"auth_policy"`
@@ -66,7 +66,7 @@ type LoadbalanceVirtualServerRes struct {
 	Method               string `json:"method"`
 	ConnectionPool       string `json:"connection-pool"`
 	Pool                 string `json:"pool"`
-	SrcPool              string `json:"src_pool"`
+	SrcPool              string `json:"source-pool-list"`
 	ErrorPage            string `json:"error-page"`
 	ErrorMsg             string `json:"error-msg"`
 	Warmup               string `json:"warmup"`
