@@ -99,6 +99,40 @@ func (c *Client) LoadbalanceGetPoolMember(pool, mkey string) (LoadbalancePoolMem
 	return LoadbalancePoolMember{}, fmt.Errorf("pool member %s in pool %s not found", mkey, pool)
 }
 
+// LoadbalanceGetPoolMemberID returns a real server pool member id by name
+func (c *Client) LoadbalanceGetPoolMemberID(pool, name string) (string, error) {
+	get, err := c.Client.Get(fmt.Sprintf("%s/api/load_balance_pool_child_pool_member?pkey=%s", c.Address, pool))
+	if err != nil {
+		return "", err
+	}
+	defer get.Body.Close()
+
+	if get.StatusCode != 200 {
+		return "", fmt.Errorf("failed to get pool member with status code: %d", get.StatusCode)
+	}
+
+	body, err := ioutil.ReadAll(get.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var LoadbalancePoolPayload struct {
+		Payload []LoadbalancePoolMember
+	}
+	err = json.Unmarshal(body, &LoadbalancePoolPayload)
+	if err != nil {
+		return "", err
+	}
+
+	for _, member := range LoadbalancePoolPayload.Payload {
+		if member.RealServerID == name {
+			return member.Mkey, nil
+		}
+	}
+
+	return "", fmt.Errorf("pool member %s in pool %s not found", name, pool)
+}
+
 // LoadbalanceCreatePoolMember creates a new real server pool member
 func (c *Client) LoadbalanceCreatePoolMember(pool string, req LoadbalancePoolMember) error {
 
