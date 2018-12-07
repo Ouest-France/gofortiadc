@@ -156,6 +156,7 @@ func TestLoadbalance(t *testing.T) {
 		Profile:             "LB_PROF_TCP",
 		Method:              "LB_METHOD_ROUND_ROBIN",
 		Pool:                "GOFORTI_POOL",
+		HTTP2HTTPS:          "enable",
 	}
 	t.Logf("reqCreateVirtualServer: %+v", reqCreateVirtualServer)
 

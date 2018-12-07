@@ -34,6 +34,7 @@ type LoadbalanceVirtualServerReq struct {
 	ContentRoutingList   string `json:"content-routing-list"`
 	ContentRewritingList string `json:"content-rewriting-list"`
 	Profile              string `json:"profile"`
+	ClientSSLProfile     string `json:"client_ssl_profile"`
 	Persistence          string `json:"persistence"`
 	Method               string `json:"method"`
 	Pool                 string `json:"pool"`
@@ -42,6 +43,7 @@ type LoadbalanceVirtualServerReq struct {
 	WafProfile           string `json:"waf-profile"`
 	AuthPolicy           string `json:"auth_policy"`
 	Scripting            string `json:"scripting"`
+	HTTP2HTTPS           string `json:"http2https"`
 }
 
 // LoadbalanceVirtualServerRes represents a virtual server response
@@ -81,6 +83,8 @@ type LoadbalanceVirtualServerRes struct {
 	Nondeletable         int    `json:"_nondeletable"`
 	Noneditable          int    `json:"_noneditable"`
 	CurrentStatus        int    `json:"current-status"`
+	ClientSSLProfile     string `json:"client_ssl_profile"`
+	HTTP2HTTPS           string `json:"http2https"`
 }
 
 // LoadbalanceGetVirtualServers returns the list of all virtaul servers

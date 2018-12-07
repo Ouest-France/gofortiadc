@@ -17,7 +17,7 @@ func TestClient_LoadbalanceGetVirtualServers(t *testing.T) {
 	}
 }
 
-func TestClient_LoadbalanceCreateVirtualServer(t *testing.T) {
+func TestClient_LoadbalanceCreateVirtualServerL4(t *testing.T) {
 	client, err := NewClientHelper()
 	if err != nil {
 		t.Fatal(err)
@@ -43,6 +43,40 @@ func TestClient_LoadbalanceCreateVirtualServer(t *testing.T) {
 		Profile:             "LB_PROF_TCP",
 		Method:              "LB_METHOD_ROUND_ROBIN",
 		Pool:                "GOFORTI_POOL",
+	}
+
+	err = client.LoadbalanceCreateVirtualServer(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_LoadbalanceCreateVirtualServerL7(t *testing.T) {
+	client, err := NewClientHelper()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req := LoadbalanceVirtualServerReq{
+		Status:              "enable",
+		Type:                "l7-load-balance",
+		AddrType:            "ipv4",
+		Address:             "128.1.201.36",
+		Port:                "8443",
+		PortRange:           "0",
+		ConnectionLimit:     "10000",
+		ContentRouting:      "disable",
+		Warmup:              "0",
+		Warmrate:            "10",
+		ConnectionRateLimit: "0",
+		Log:                 "disable",
+		Alone:               "enable",
+		Mkey:                "GOFORTI-VS",
+		Interface:           "port1",
+		Profile:             "LB_PROF_HTTPS_XF-ORWARDED-FOR",
+		Method:              "LB_METHOD_ROUND_ROBIN",
+		Pool:                "GOFORTI_POOL",
+		ClientSSLProfile:    "LB_CLIENT_SSL",
 	}
 
 	err = client.LoadbalanceCreateVirtualServer(req)
