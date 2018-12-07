@@ -122,7 +122,7 @@ func (c *Client) LoadbalanceCreatePool(req LoadbalancePoolReq) error {
 	}
 
 	if res.Payload != 0 {
-		return fmt.Errorf("virtual server pool creation failed with result payload: %d", res.Payload)
+		return fmt.Errorf("virtual server pool creation failed: %s", getErrorMessage(res.Payload))
 	}
 
 	return nil
@@ -164,7 +164,7 @@ func (c *Client) LoadbalanceUpdatePool(pool LoadbalancePoolReq) error {
 	}
 
 	if res.Payload != 0 {
-		return fmt.Errorf("pool update failed with result payload: %d", res.Payload)
+		return fmt.Errorf("pool update failed: %s", getErrorMessage(res.Payload))
 	}
 
 	return nil
@@ -204,7 +204,7 @@ func (c *Client) LoadbalanceDeletePool(pool string) error {
 	}
 
 	if res.Payload != 0 {
-		return fmt.Errorf("deletion failed with result payload: %d", res.Payload)
+		return fmt.Errorf("deletion failed: %s", getErrorMessage(res.Payload))
 	}
 
 	return nil

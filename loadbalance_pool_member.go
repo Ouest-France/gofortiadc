@@ -163,7 +163,7 @@ func (c *Client) LoadbalanceCreatePoolMember(pool string, req LoadbalancePoolMem
 	}
 
 	if res.Payload != 0 {
-		return fmt.Errorf("pool member creation failed with result payload: %d", res.Payload)
+		return fmt.Errorf("pool member creation failed: %s", getErrorMessage(res.Payload))
 	}
 
 	return nil
@@ -205,7 +205,7 @@ func (c *Client) LoadbalanceUpdatePoolMember(pool, mkey string, member Loadbalan
 	}
 
 	if res.Payload != 0 {
-		return fmt.Errorf("pool member update failed with result payload: %d", res.Payload)
+		return fmt.Errorf("pool member update failed: %s", getErrorMessage(res.Payload))
 	}
 
 	return nil
@@ -245,7 +245,7 @@ func (c *Client) LoadbalanceDeletePoolMember(pool, mkey string) error {
 	}
 
 	if res.Payload != 0 {
-		return fmt.Errorf("deletion failed with result payload: %d", res.Payload)
+		return fmt.Errorf("deletion failed: %s", getErrorMessage(res.Payload))
 	}
 
 	return nil

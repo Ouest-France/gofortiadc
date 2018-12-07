@@ -109,7 +109,7 @@ func (c *Client) LoadbalanceCreateRealServer(req LoadbalanceRealServer) error {
 	}
 
 	if res.Payload != 0 {
-		return fmt.Errorf("real server creation failed with result payload: %d", res.Payload)
+		return fmt.Errorf("real server creation failed: %s ", getErrorMessage(res.Payload))
 	}
 
 	return nil
@@ -151,7 +151,7 @@ func (c *Client) LoadbalanceUpdateRealServer(rs LoadbalanceRealServer) error {
 	}
 
 	if res.Payload != 0 {
-		return fmt.Errorf("real server update failed with result payload: %d", res.Payload)
+		return fmt.Errorf("real server update failed: %s", getErrorMessage(res.Payload))
 	}
 
 	return nil
@@ -191,7 +191,7 @@ func (c *Client) LoadbalanceDeleteRealServer(name string) error {
 	}
 
 	if res.Payload != 0 {
-		return fmt.Errorf("real server deletion failed with result payload: %d", res.Payload)
+		return fmt.Errorf("real server deletion failed: %s", getErrorMessage(res.Payload))
 	}
 
 	return nil

@@ -179,7 +179,7 @@ func (c *Client) LoadbalanceCreateVirtualServer(req LoadbalanceVirtualServerReq)
 	}
 
 	if res.Payload != 0 {
-		return fmt.Errorf("virtual server creation failed with result payload: %d", res.Payload)
+		return fmt.Errorf("virtual server creation failed: %s", getErrorMessage(res.Payload))
 	}
 
 	return nil
@@ -221,7 +221,7 @@ func (c *Client) LoadbalanceUpdateVirtualServer(vs LoadbalanceVirtualServerReq) 
 	}
 
 	if res.Payload != 0 {
-		return fmt.Errorf("virtual server update failed with result payload: %d", res.Payload)
+		return fmt.Errorf("virtual server update failed: %s", getErrorMessage(res.Payload))
 	}
 
 	return nil
@@ -261,7 +261,7 @@ func (c *Client) LoadbalanceDeleteVirtualServer(vs string) error {
 	}
 
 	if res.Payload != 0 {
-		return fmt.Errorf("virtual server deletion failed with result payload: %d", res.Payload)
+		return fmt.Errorf("virtual server deletion failed: %s", getErrorMessage(res.Payload))
 	}
 
 	return nil
