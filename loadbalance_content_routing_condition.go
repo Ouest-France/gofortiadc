@@ -80,6 +80,51 @@ func (c *Client) LoadbalanceGetContentRoutingCondition(cr, mkey string) (Loadbal
 	return LoadbalanceContentRoutingCondition{}, fmt.Errorf("content routing condition %s not found", mkey)
 }
 
+// LoadbalanceGetContentRoutingConditionID returns a content routing condition ID by request
+func (c *Client) LoadbalanceGetContentRoutingConditionID(cr string, obj LoadbalanceContentRoutingCondition) (string, error) {
+	get, err := c.Client.Get(fmt.Sprintf("%s/api/load_balance_content_routing_child_match_condition?pkey=%s", c.Address, cr))
+	if err != nil {
+		return "", err
+	}
+	defer get.Body.Close()
+
+	if get.StatusCode != 200 {
+		return "", fmt.Errorf("failed to get content routing conditions list with status code: %d", get.StatusCode)
+	}
+
+	body, err := ioutil.ReadAll(get.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var LoadbalanceContentRoutingConditionPayload struct {
+		Payload []LoadbalanceContentRoutingCondition
+	}
+	err = json.Unmarshal(body, &LoadbalanceContentRoutingConditionPayload)
+	if err != nil {
+		return "", err
+	}
+
+	for _, rs := range LoadbalanceContentRoutingConditionPayload.Payload {
+		if rs.Content != obj.Content {
+			continue
+		}
+		if rs.Object != obj.Object {
+			continue
+		}
+		if rs.Type != obj.Type {
+			continue
+		}
+		if rs.Reverse != obj.Reverse {
+			continue
+		}
+
+		return rs.Mkey, nil
+	}
+
+	return "", fmt.Errorf("content routing condition ID %+v not found", obj)
+}
+
 // LoadbalanceCreateContentRoutingCondition creates a new content routing condition
 func (c *Client) LoadbalanceCreateContentRoutingCondition(cr string, req LoadbalanceContentRoutingCondition) error {
 
