@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 )
 
 // LoadbalanceVirtualServerReq represents a virtual server request
@@ -89,17 +88,22 @@ type LoadbalanceVirtualServerRes struct {
 
 // LoadbalanceGetVirtualServers returns the list of all virtaul servers
 func (c *Client) LoadbalanceGetVirtualServers() ([]LoadbalanceVirtualServerRes, error) {
-	get, err := c.Client.Get(fmt.Sprintf("%s/api/load_balance_virtual_server", c.Address))
+	req, err := c.NewRequest("GET", fmt.Sprintf("%s/api/load_balance_virtual_server", c.Address), nil)
 	if err != nil {
 		return []LoadbalanceVirtualServerRes{}, err
 	}
-	defer get.Body.Close()
 
-	if get.StatusCode != 200 {
-		return []LoadbalanceVirtualServerRes{}, fmt.Errorf("failed to get virtual servers list with status code: %d", get.StatusCode)
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return []LoadbalanceVirtualServerRes{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return []LoadbalanceVirtualServerRes{}, fmt.Errorf("failed to get virtual servers list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(get.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return []LoadbalanceVirtualServerRes{}, err
 	}
@@ -117,17 +121,23 @@ func (c *Client) LoadbalanceGetVirtualServers() ([]LoadbalanceVirtualServerRes, 
 
 // LoadbalanceGetVirtualServer returns a virtual server by name
 func (c *Client) LoadbalanceGetVirtualServer(name string) (LoadbalanceVirtualServerRes, error) {
-	get, err := c.Client.Get(fmt.Sprintf("%s/api/load_balance_virtual_server", c.Address))
+
+	req, err := c.NewRequest("GET", fmt.Sprintf("%s/api/load_balance_virtual_server", c.Address), nil)
 	if err != nil {
 		return LoadbalanceVirtualServerRes{}, err
 	}
-	defer get.Body.Close()
 
-	if get.StatusCode != 200 {
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return LoadbalanceVirtualServerRes{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
 		return LoadbalanceVirtualServerRes{}, errors.New("Non 200 return code")
 	}
 
-	body, err := ioutil.ReadAll(get.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return LoadbalanceVirtualServerRes{}, err
 	}
@@ -150,36 +160,41 @@ func (c *Client) LoadbalanceGetVirtualServer(name string) (LoadbalanceVirtualSer
 }
 
 // LoadbalanceCreateVirtualServer creates a new virtual server
-func (c *Client) LoadbalanceCreateVirtualServer(req LoadbalanceVirtualServerReq) error {
+func (c *Client) LoadbalanceCreateVirtualServer(vs LoadbalanceVirtualServerReq) error {
 
-	payloadJSON, err := json.Marshal(req)
+	payloadJSON, err := json.Marshal(vs)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.Client.Post(fmt.Sprintf("%s/api/load_balance_virtual_server", c.Address), "application/json", bytes.NewReader(payloadJSON))
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("virtual server creation failed with status code: %d", resp.StatusCode)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
+	req, err := c.NewRequest("POST", fmt.Sprintf("%s/api/load_balance_virtual_server", c.Address), bytes.NewReader(payloadJSON))
 	if err != nil {
 		return err
 	}
 
-	res := struct{ Payload int }{}
-	err = json.Unmarshal(body, &res)
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return fmt.Errorf("virtual server creation failed with status code: %d", res.StatusCode)
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 
-	if res.Payload != 0 {
-		return fmt.Errorf("virtual server creation failed: %s", getErrorMessage(res.Payload))
+	resJSON := struct{ Payload int }{}
+	err = json.Unmarshal(body, &resJSON)
+	if err != nil {
+		return err
+	}
+
+	if resJSON.Payload != 0 {
+		return fmt.Errorf("virtual server creation failed: %s", getErrorMessage(resJSON.Payload))
 	}
 
 	return nil
@@ -193,35 +208,35 @@ func (c *Client) LoadbalanceUpdateVirtualServer(vs LoadbalanceVirtualServerReq) 
 		return err
 	}
 
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/api/load_balance_virtual_server/%s", c.Address, vs.Mkey), bytes.NewReader(payloadJSON))
+	req, err := c.NewRequest("PUT", fmt.Sprintf("%s/api/load_balance_virtual_server?mkey=%s", c.Address, vs.Mkey), bytes.NewReader(payloadJSON))
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.Client.Do(req)
+	res, err := c.Client.Do(req)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer res.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("virtual server update failed with status code: %d", resp.StatusCode)
+	if res.StatusCode != 200 {
+		return fmt.Errorf("virtual server update failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 	fmt.Println(string(body))
 
-	res := struct{ Payload int }{}
-	err = json.Unmarshal(body, &res)
+	resJSON := struct{ Payload int }{}
+	err = json.Unmarshal(body, &resJSON)
 	if err != nil {
 		return err
 	}
 
-	if res.Payload != 0 {
-		return fmt.Errorf("virtual server update failed: %s", getErrorMessage(res.Payload))
+	if resJSON.Payload != 0 {
+		return fmt.Errorf("virtual server update failed: %s", getErrorMessage(resJSON.Payload))
 	}
 
 	return nil
@@ -234,34 +249,34 @@ func (c *Client) LoadbalanceDeleteVirtualServer(vs string) error {
 		return errors.New("virtual server name cannot be empty")
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/api/load_balance_virtual_server/%s", c.Address, vs), nil)
+	req, err := c.NewRequest("DELETE", fmt.Sprintf("%s/api/load_balance_virtual_server?mkey=%s", c.Address, vs), nil)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.Client.Do(req)
+	res, err := c.Client.Do(req)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer res.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("virtual server deletion failed with status code: %d", resp.StatusCode)
+	if res.StatusCode != 200 {
+		return fmt.Errorf("virtual server deletion failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	res := struct{ Payload int }{}
-	err = json.Unmarshal(body, &res)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 
-	if res.Payload != 0 {
-		return fmt.Errorf("virtual server deletion failed: %s", getErrorMessage(res.Payload))
+	resJSON := struct{ Payload int }{}
+	err = json.Unmarshal(body, &resJSON)
+	if err != nil {
+		return err
+	}
+
+	if resJSON.Payload != 0 {
+		return fmt.Errorf("virtual server deletion failed: %s", getErrorMessage(resJSON.Payload))
 	}
 
 	return nil
