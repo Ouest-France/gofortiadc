@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 )
 
 // LoadbalanceContentRoutingCondition represents a content routing condition request/response
@@ -20,17 +19,22 @@ type LoadbalanceContentRoutingCondition struct {
 
 // LoadbalanceGetContentRoutingConditions returns the list of all content routing conditions
 func (c *Client) LoadbalanceGetContentRoutingConditions(cr string) ([]LoadbalanceContentRoutingCondition, error) {
-	get, err := c.Client.Get(fmt.Sprintf("%s/api/load_balance_content_routing_child_match_condition?pkey=%s", c.Address, cr))
+	req, err := c.NewRequest("GET", fmt.Sprintf("%s/api/load_balance_content_routing_child_match_condition?pkey=%s", c.Address, cr), nil)
 	if err != nil {
 		return []LoadbalanceContentRoutingCondition{}, err
 	}
-	defer get.Body.Close()
 
-	if get.StatusCode != 200 {
-		return []LoadbalanceContentRoutingCondition{}, fmt.Errorf("failed to get content routing conditions list with status code: %d", get.StatusCode)
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return []LoadbalanceContentRoutingCondition{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return []LoadbalanceContentRoutingCondition{}, fmt.Errorf("failed to get content routing conditions list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(get.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return []LoadbalanceContentRoutingCondition{}, err
 	}
@@ -48,17 +52,22 @@ func (c *Client) LoadbalanceGetContentRoutingConditions(cr string) ([]Loadbalanc
 
 // LoadbalanceGetContentRoutingCondition returns a content routing condition by name
 func (c *Client) LoadbalanceGetContentRoutingCondition(cr, mkey string) (LoadbalanceContentRoutingCondition, error) {
-	get, err := c.Client.Get(fmt.Sprintf("%s/api/load_balance_content_routing_child_match_condition?pkey=%s", c.Address, cr))
+	req, err := c.NewRequest("GET", fmt.Sprintf("%s/api/load_balance_content_routing_child_match_condition?pkey=%s", c.Address, cr), nil)
 	if err != nil {
 		return LoadbalanceContentRoutingCondition{}, err
 	}
-	defer get.Body.Close()
 
-	if get.StatusCode != 200 {
-		return LoadbalanceContentRoutingCondition{}, fmt.Errorf("failed to get content routing conditions list with status code: %d", get.StatusCode)
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return LoadbalanceContentRoutingCondition{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return LoadbalanceContentRoutingCondition{}, fmt.Errorf("failed to get content routing conditions list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(get.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return LoadbalanceContentRoutingCondition{}, err
 	}
@@ -82,17 +91,22 @@ func (c *Client) LoadbalanceGetContentRoutingCondition(cr, mkey string) (Loadbal
 
 // LoadbalanceGetContentRoutingConditionID returns a content routing condition ID by request
 func (c *Client) LoadbalanceGetContentRoutingConditionID(cr string, obj LoadbalanceContentRoutingCondition) (string, error) {
-	get, err := c.Client.Get(fmt.Sprintf("%s/api/load_balance_content_routing_child_match_condition?pkey=%s", c.Address, cr))
+	req, err := c.NewRequest("GET", fmt.Sprintf("%s/api/load_balance_content_routing_child_match_condition?pkey=%s", c.Address, cr), nil)
 	if err != nil {
 		return "", err
 	}
-	defer get.Body.Close()
 
-	if get.StatusCode != 200 {
-		return "", fmt.Errorf("failed to get content routing conditions list with status code: %d", get.StatusCode)
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return "", fmt.Errorf("failed to get content routing conditions list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(get.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return "", err
 	}
@@ -126,40 +140,45 @@ func (c *Client) LoadbalanceGetContentRoutingConditionID(cr string, obj Loadbala
 }
 
 // LoadbalanceCreateContentRoutingCondition creates a new content routing condition
-func (c *Client) LoadbalanceCreateContentRoutingCondition(cr string, req LoadbalanceContentRoutingCondition) error {
+func (c *Client) LoadbalanceCreateContentRoutingCondition(cr string, rc LoadbalanceContentRoutingCondition) error {
 
-	payloadJSON, err := json.Marshal(req)
+	payloadJSON, err := json.Marshal(rc)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.Client.Post(
+	req, err := c.NewRequest(
+		"POST",
 		fmt.Sprintf("%s/api/load_balance_content_routing_child_match_condition?pkey=%s", c.Address, cr),
-		"application/json",
 		bytes.NewReader(payloadJSON),
 	)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("content routing condition creation failed with status code: %d", resp.StatusCode)
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return fmt.Errorf("content routing condition creation failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 
-	res := struct{ Payload int }{}
-	err = json.Unmarshal(body, &res)
+	resJSON := struct{ Payload int }{}
+	err = json.Unmarshal(body, &resJSON)
 	if err != nil {
 		return err
 	}
 
-	if res.Payload != 0 {
-		return fmt.Errorf("content routing condition creation failed: %s ", getErrorMessage(res.Payload))
+	if resJSON.Payload != 0 {
+		return fmt.Errorf("content routing condition creation failed: %s ", getErrorMessage(resJSON.Payload))
 	}
 
 	return nil
@@ -173,39 +192,39 @@ func (c *Client) LoadbalanceUpdateContentRoutingCondition(cr string, rs Loadbala
 		return err
 	}
 
-	req, err := http.NewRequest(
+	req, err := c.NewRequest(
 		"PUT",
-		fmt.Sprintf("%s/api/load_balance_content_routing_child_match_condition/%s?pkey=%s", c.Address, rs.Mkey, cr),
+		fmt.Sprintf("%s/api/load_balance_content_routing_child_match_condition?mkey=%s&pkey=%s", c.Address, rs.Mkey, cr),
 		bytes.NewReader(payloadJSON),
 	)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.Client.Do(req)
+	res, err := c.Client.Do(req)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer res.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("content routing condition update failed with status code: %d", resp.StatusCode)
+	if res.StatusCode != 200 {
+		return fmt.Errorf("content routing condition update failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 	fmt.Println(string(body))
 
-	res := struct{ Payload int }{}
-	err = json.Unmarshal(body, &res)
+	resJSON := struct{ Payload int }{}
+	err = json.Unmarshal(body, &resJSON)
 	if err != nil {
 		return err
 	}
 
-	if res.Payload != 0 {
-		return fmt.Errorf("content routing condition update failed: %s", getErrorMessage(res.Payload))
+	if resJSON.Payload != 0 {
+		return fmt.Errorf("content routing condition update failed: %s", getErrorMessage(resJSON.Payload))
 	}
 
 	return nil
@@ -218,38 +237,38 @@ func (c *Client) LoadbalanceDeleteContentRoutingCondition(cr, mkey string) error
 		return errors.New("content routing condition mkey cannot be empty")
 	}
 
-	req, err := http.NewRequest(
+	req, err := c.NewRequest(
 		"DELETE",
-		fmt.Sprintf("%s/api/load_balance_content_routing_child_match_condition/%s?pkey=%s", c.Address, mkey, cr),
+		fmt.Sprintf("%s/api/load_balance_content_routing_child_match_condition?mkey=%s&pkey=%s", c.Address, mkey, cr),
 		nil,
 	)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.Client.Do(req)
+	res, err := c.Client.Do(req)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer res.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("content routing condition deletion failed with status code: %d", resp.StatusCode)
+	if res.StatusCode != 200 {
+		return fmt.Errorf("content routing condition deletion failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	res := struct{ Payload int }{}
-	err = json.Unmarshal(body, &res)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 
-	if res.Payload != 0 {
-		return fmt.Errorf("content routing condition deletion failed: %s", getErrorMessage(res.Payload))
+	resJSON := struct{ Payload int }{}
+	err = json.Unmarshal(body, &resJSON)
+	if err != nil {
+		return err
+	}
+
+	if resJSON.Payload != 0 {
+		return fmt.Errorf("content routing condition deletion failed: %s", getErrorMessage(resJSON.Payload))
 	}
 
 	return nil
