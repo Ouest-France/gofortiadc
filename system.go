@@ -2,7 +2,6 @@ package gofortiadc
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 )
@@ -34,14 +33,19 @@ type SystemGlobalRes struct {
 // SystemGlobal returns system global status
 func (c *Client) SystemGlobal() (SystemGlobalRes, error) {
 
-	get, err := c.Client.Get(fmt.Sprintf("%s/api/system_global", c.Address))
+	req, err := c.NewRequest("GET", fmt.Sprintf("%s/api/system_global", c.Address), nil)
+	if err != nil {
+		return SystemGlobalRes{}, fmt.Errorf("Failed create http request: %s", err)
+	}
+
+	get, err := c.Client.Do(req)
 	if err != nil {
 		return SystemGlobalRes{}, err
 	}
 	defer get.Body.Close()
 
 	if get.StatusCode != 200 {
-		return SystemGlobalRes{}, errors.New("Non 200 return code")
+		return SystemGlobalRes{}, fmt.Errorf("Failed to get system endpoint with http code: %d", get.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(get.Body)
