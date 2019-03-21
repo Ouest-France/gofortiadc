@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 )
 
 // LoadbalanceContentRouting represents a content routing request/response
@@ -31,17 +30,22 @@ type LoadbalanceContentRouting struct {
 
 // LoadbalanceGetContentRoutings returns the list of all content routings
 func (c *Client) LoadbalanceGetContentRoutings() ([]LoadbalanceContentRouting, error) {
-	get, err := c.Client.Get(fmt.Sprintf("%s/api/load_balance_content_routing", c.Address))
+	req, err := c.NewRequest("GET", fmt.Sprintf("%s/api/load_balance_content_routing", c.Address), nil)
 	if err != nil {
 		return []LoadbalanceContentRouting{}, err
 	}
-	defer get.Body.Close()
 
-	if get.StatusCode != 200 {
-		return []LoadbalanceContentRouting{}, fmt.Errorf("failed to get content routing list with status code: %d", get.StatusCode)
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return []LoadbalanceContentRouting{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return []LoadbalanceContentRouting{}, fmt.Errorf("failed to get content routing list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(get.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return []LoadbalanceContentRouting{}, err
 	}
@@ -59,17 +63,22 @@ func (c *Client) LoadbalanceGetContentRoutings() ([]LoadbalanceContentRouting, e
 
 // LoadbalanceGetContentRouting returns a content routing by name
 func (c *Client) LoadbalanceGetContentRouting(name string) (LoadbalanceContentRouting, error) {
-	get, err := c.Client.Get(fmt.Sprintf("%s/api/load_balance_content_routing", c.Address))
+	req, err := c.NewRequest("GET", fmt.Sprintf("%s/api/load_balance_content_routing", c.Address), nil)
 	if err != nil {
 		return LoadbalanceContentRouting{}, err
 	}
-	defer get.Body.Close()
 
-	if get.StatusCode != 200 {
-		return LoadbalanceContentRouting{}, fmt.Errorf("failed to get content routing list with status code: %d", get.StatusCode)
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return LoadbalanceContentRouting{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return LoadbalanceContentRouting{}, fmt.Errorf("failed to get content routing list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(get.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return LoadbalanceContentRouting{}, err
 	}
@@ -92,36 +101,41 @@ func (c *Client) LoadbalanceGetContentRouting(name string) (LoadbalanceContentRo
 }
 
 // LoadbalanceCreateContentRouting creates a new content routing
-func (c *Client) LoadbalanceCreateContentRouting(req LoadbalanceContentRouting) error {
+func (c *Client) LoadbalanceCreateContentRouting(cr LoadbalanceContentRouting) error {
 
-	payloadJSON, err := json.Marshal(req)
+	payloadJSON, err := json.Marshal(cr)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.Client.Post(fmt.Sprintf("%s/api/load_balance_content_routing", c.Address), "application/json", bytes.NewReader(payloadJSON))
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("content routing creation failed with status code: %d", resp.StatusCode)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
+	req, err := c.NewRequest("POST", fmt.Sprintf("%s/api/load_balance_content_routing", c.Address), bytes.NewReader(payloadJSON))
 	if err != nil {
 		return err
 	}
 
-	res := struct{ Payload int }{}
-	err = json.Unmarshal(body, &res)
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return fmt.Errorf("content routing creation failed with status code: %d", res.StatusCode)
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 
-	if res.Payload != 0 {
-		return fmt.Errorf("content routing creation failed: %s ", getErrorMessage(res.Payload))
+	resJSON := struct{ Payload int }{}
+	err = json.Unmarshal(body, &resJSON)
+	if err != nil {
+		return err
+	}
+
+	if resJSON.Payload != 0 {
+		return fmt.Errorf("content routing creation failed: %s ", getErrorMessage(resJSON.Payload))
 	}
 
 	return nil
@@ -135,35 +149,35 @@ func (c *Client) LoadbalanceUpdateContentRouting(rs LoadbalanceContentRouting) e
 		return err
 	}
 
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/api/load_balance_content_routing/%s", c.Address, rs.Mkey), bytes.NewReader(payloadJSON))
+	req, err := c.NewRequest("PUT", fmt.Sprintf("%s/api/load_balance_content_routing?mkey=%s", c.Address, rs.Mkey), bytes.NewReader(payloadJSON))
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.Client.Do(req)
+	res, err := c.Client.Do(req)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer res.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("content routing update failed with status code: %d", resp.StatusCode)
+	if res.StatusCode != 200 {
+		return fmt.Errorf("content routing update failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 	fmt.Println(string(body))
 
-	res := struct{ Payload int }{}
-	err = json.Unmarshal(body, &res)
+	resJSON := struct{ Payload int }{}
+	err = json.Unmarshal(body, &resJSON)
 	if err != nil {
 		return err
 	}
 
-	if res.Payload != 0 {
-		return fmt.Errorf("content routing update failed: %s", getErrorMessage(res.Payload))
+	if resJSON.Payload != 0 {
+		return fmt.Errorf("content routing update failed: %s", getErrorMessage(resJSON.Payload))
 	}
 
 	return nil
@@ -176,34 +190,34 @@ func (c *Client) LoadbalanceDeleteContentRouting(name string) error {
 		return errors.New("content routing name cannot be empty")
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/api/load_balance_content_routing/%s", c.Address, name), nil)
+	req, err := c.NewRequest("DELETE", fmt.Sprintf("%s/api/load_balance_content_routing?mkey=%s", c.Address, name), nil)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.Client.Do(req)
+	res, err := c.Client.Do(req)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer res.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("content routing deletion failed with status code: %d", resp.StatusCode)
+	if res.StatusCode != 200 {
+		return fmt.Errorf("content routing deletion failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	res := struct{ Payload int }{}
-	err = json.Unmarshal(body, &res)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 
-	if res.Payload != 0 {
-		return fmt.Errorf("content routing deletion failed: %s", getErrorMessage(res.Payload))
+	resJSON := struct{ Payload int }{}
+	err = json.Unmarshal(body, &resJSON)
+	if err != nil {
+		return err
+	}
+
+	if resJSON.Payload != 0 {
+		return fmt.Errorf("content routing deletion failed: %s", getErrorMessage(resJSON.Payload))
 	}
 
 	return nil
