@@ -1,6 +1,7 @@
 package gofortiadc
 
 import (
+	"os"
 	"testing"
 )
 
@@ -18,6 +19,10 @@ func TestClient_LoadbalanceGetContentRoutings(t *testing.T) {
 }
 
 func TestClient_LoadbalanceGetContentRouting(t *testing.T) {
+	if os.Getenv("TEST_LENS") != "true" {
+		t.Skip()
+	}
+
 	client, err := NewClientHelper()
 	if err != nil {
 		t.Fatal(err)
@@ -30,6 +35,10 @@ func TestClient_LoadbalanceGetContentRouting(t *testing.T) {
 }
 
 func TestClient_LoadbalanceCreateContentRouting(t *testing.T) {
+	if os.Getenv("TEST_LENS") != "true" {
+		t.Skip()
+	}
+
 	client, err := NewClientHelper()
 	if err != nil {
 		t.Fatal(err)
@@ -61,6 +70,10 @@ func TestClient_LoadbalanceCreateContentRouting(t *testing.T) {
 }
 
 func TestClient_LoadbalanceUpdateContentRouting(t *testing.T) {
+	if os.Getenv("TEST_LENS") != "true" {
+		t.Skip()
+	}
+
 	client, err := NewClientHelper()
 	if err != nil {
 		t.Fatal(err)
@@ -92,6 +105,10 @@ func TestClient_LoadbalanceUpdateContentRouting(t *testing.T) {
 }
 
 func TestClient_Client_LoadbalanceDeleteContentRouting(t *testing.T) {
+	if os.Getenv("TEST_LENS") != "true" {
+		t.Skip()
+	}
+
 	client, err := NewClientHelper()
 	if err != nil {
 		t.Fatal(err)

@@ -1,6 +1,7 @@
 package gofortiadc
 
 import (
+	"os"
 	"testing"
 )
 
@@ -18,6 +19,10 @@ func TestClient_LoadbalanceGetVirtualServers(t *testing.T) {
 }
 
 func TestClient_LoadbalanceCreateVirtualServerL4(t *testing.T) {
+	if os.Getenv("TEST_LENS") != "true" {
+		t.Skip()
+	}
+
 	client, err := NewClientHelper()
 	if err != nil {
 		t.Fatal(err)
@@ -52,6 +57,10 @@ func TestClient_LoadbalanceCreateVirtualServerL4(t *testing.T) {
 }
 
 func TestClient_LoadbalanceCreateVirtualServerL7(t *testing.T) {
+	if os.Getenv("TEST_LENS") != "true" {
+		t.Skip()
+	}
+
 	client, err := NewClientHelper()
 	if err != nil {
 		t.Fatal(err)
@@ -73,10 +82,9 @@ func TestClient_LoadbalanceCreateVirtualServerL7(t *testing.T) {
 		Alone:               "enable",
 		Mkey:                "GOFORTI-VS",
 		Interface:           "port1",
-		Profile:             "LB_PROF_HTTPS_XF-ORWARDED-FOR",
+		Profile:             "LB_PROF_HTTP",
 		Method:              "LB_METHOD_ROUND_ROBIN",
 		Pool:                "GOFORTI_POOL",
-		ClientSSLProfile:    "LB_CLIENT_SSL",
 	}
 
 	err = client.LoadbalanceCreateVirtualServer(req)
@@ -86,6 +94,10 @@ func TestClient_LoadbalanceCreateVirtualServerL7(t *testing.T) {
 }
 
 func TestClient_LoadbalanceUpdateVirtualServer(t *testing.T) {
+	if os.Getenv("TEST_LENS") != "true" {
+		t.Skip()
+	}
+
 	client, err := NewClientHelper()
 	if err != nil {
 		t.Fatal(err)
@@ -120,6 +132,10 @@ func TestClient_LoadbalanceUpdateVirtualServer(t *testing.T) {
 }
 
 func TestClient_LoadbalanceGetVirtualServer(t *testing.T) {
+	if os.Getenv("TEST_LENS") != "true" {
+		t.Skip()
+	}
+
 	client, err := NewClientHelper()
 	if err != nil {
 		t.Fatal(err)
@@ -132,6 +148,10 @@ func TestClient_LoadbalanceGetVirtualServer(t *testing.T) {
 }
 
 func TestClient_Client_LoadbalanceDeleteVirtualServer(t *testing.T) {
+	if os.Getenv("TEST_LENS") != "true" {
+		t.Skip()
+	}
+
 	client, err := NewClientHelper()
 	if err != nil {
 		t.Fatal(err)

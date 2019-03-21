@@ -10,8 +10,7 @@ import (
 
 // AuthRes represents a login auth response
 type AuthRes struct {
-	Sid      int    `json:"sid"`
-	Username string `json:"username"`
+	Token string `json:"token"`
 }
 
 // Login authenticates goforti client
@@ -38,7 +37,7 @@ func (c *Client) Login() error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return errors.New("Login failed")
+		return fmt.Errorf("Login failed with http code: %d", resp.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -46,11 +45,13 @@ func (c *Client) Login() error {
 		return err
 	}
 
-	var authRes struct{ payload AuthRes }
+	var authRes AuthRes
 	err = json.Unmarshal(body, &authRes)
 	if err != nil {
 		return err
 	}
+
+	c.Token = authRes.Token
 
 	return nil
 }

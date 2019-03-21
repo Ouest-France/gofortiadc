@@ -5,6 +5,7 @@ import (
 )
 
 func TestSystemGlobal(t *testing.T) {
+
 	client, err := NewClientHelper()
 	if err != nil {
 		t.Fatal(err)
