@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 )
 
 // LoadbalanceRealServer represents a real server request/response
@@ -19,17 +18,22 @@ type LoadbalanceRealServer struct {
 
 // LoadbalanceGetRealServers returns the list of all real servers
 func (c *Client) LoadbalanceGetRealServers() ([]LoadbalanceRealServer, error) {
-	get, err := c.Client.Get(fmt.Sprintf("%s/api/load_balance_real_server", c.Address))
+	req, err := c.NewRequest("GET", fmt.Sprintf("%s/api/load_balance_real_server", c.Address), nil)
 	if err != nil {
 		return []LoadbalanceRealServer{}, err
 	}
-	defer get.Body.Close()
 
-	if get.StatusCode != 200 {
-		return []LoadbalanceRealServer{}, fmt.Errorf("failed to get real servers list with status code: %d", get.StatusCode)
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return []LoadbalanceRealServer{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return []LoadbalanceRealServer{}, fmt.Errorf("failed to get real servers list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(get.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return []LoadbalanceRealServer{}, err
 	}
@@ -47,17 +51,22 @@ func (c *Client) LoadbalanceGetRealServers() ([]LoadbalanceRealServer, error) {
 
 // LoadbalanceGetRealServer returns a real server by name
 func (c *Client) LoadbalanceGetRealServer(name string) (LoadbalanceRealServer, error) {
-	get, err := c.Client.Get(fmt.Sprintf("%s/api/load_balance_real_server", c.Address))
+	req, err := c.NewRequest("GET", fmt.Sprintf("%s/api/load_balance_real_server", c.Address), nil)
 	if err != nil {
 		return LoadbalanceRealServer{}, err
 	}
-	defer get.Body.Close()
 
-	if get.StatusCode != 200 {
-		return LoadbalanceRealServer{}, fmt.Errorf("failed to get real servers list with status code: %d", get.StatusCode)
+	res, err := c.Client.Do(req)
+	if err != nil {
+		return LoadbalanceRealServer{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return LoadbalanceRealServer{}, fmt.Errorf("failed to get real servers list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(get.Body)
+	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return LoadbalanceRealServer{}, err
 	}
@@ -80,14 +89,19 @@ func (c *Client) LoadbalanceGetRealServer(name string) (LoadbalanceRealServer, e
 }
 
 // LoadbalanceCreateRealServer creates a new real server
-func (c *Client) LoadbalanceCreateRealServer(req LoadbalanceRealServer) error {
+func (c *Client) LoadbalanceCreateRealServer(rs LoadbalanceRealServer) error {
 
-	payloadJSON, err := json.Marshal(req)
+	payloadJSON, err := json.Marshal(rs)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.Client.Post(fmt.Sprintf("%s/api/load_balance_real_server", c.Address), "application/json", bytes.NewReader(payloadJSON))
+	req, err := c.NewRequest("POST", fmt.Sprintf("%s/api/load_balance_real_server", c.Address), bytes.NewReader(payloadJSON))
+	if err != nil {
+		return err
+	}
+
+	resp, err := c.Client.Do(req)
 	if err != nil {
 		return err
 	}
@@ -123,7 +137,7 @@ func (c *Client) LoadbalanceUpdateRealServer(rs LoadbalanceRealServer) error {
 		return err
 	}
 
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/api/load_balance_real_server/%s", c.Address, rs.Mkey), bytes.NewReader(payloadJSON))
+	req, err := c.NewRequest("PUT", fmt.Sprintf("%s/api/load_balance_real_server?mkey=%s", c.Address, rs.Mkey), bytes.NewReader(payloadJSON))
 	if err != nil {
 		return err
 	}
@@ -164,7 +178,7 @@ func (c *Client) LoadbalanceDeleteRealServer(name string) error {
 		return errors.New("real server name cannot be empty")
 	}
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/api/load_balance_real_server/%s", c.Address, name), nil)
+	req, err := c.NewRequest("DELETE", fmt.Sprintf("%s/api/load_balance_real_server?mkey=%s", c.Address, name), nil)
 	if err != nil {
 		return err
 	}
