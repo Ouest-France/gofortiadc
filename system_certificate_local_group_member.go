@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 )
 
-// SystemLocalCertificateGroup represents a local certificate request/response
+// SystemLocalCertificateGroupMember represents a local certificate request/response
 type SystemLocalCertificateGroupMember struct {
 	OCSPStapling         string `json:"OCSP_stapling"`
 	Default              string `json:"default"`
