@@ -136,20 +136,19 @@ func TestLoadbalance(t *testing.T) {
 	}
 
 	// Create virtual server
-	reqCreateVirtualServer := LoadbalanceVirtualServerReq{
+	reqCreateVirtualServer := LoadbalanceVirtualServer{
 		Status:              "enable",
 		Type:                "l4-load-balance",
 		AddrType:            "ipv4",
 		Address:             "128.1.201.35",
 		PacketFwdMethod:     "NAT",
 		Port:                "80",
-		PortRange:           "0",
 		ConnectionLimit:     "10000",
 		ContentRouting:      "disable",
 		Warmup:              "0",
 		Warmrate:            "10",
 		ConnectionRateLimit: "0",
-		Log:                 "enable",
+		TrafficLog:          "enable",
 		Alone:               "enable",
 		Mkey:                "GOFORTI-VS",
 		Interface:           "port1",
@@ -166,20 +165,19 @@ func TestLoadbalance(t *testing.T) {
 	}
 
 	// Update virtual server
-	reqUpdateVirtualServer := LoadbalanceVirtualServerReq{
+	reqUpdateVirtualServer := LoadbalanceVirtualServer{
 		Status:              "enable",
 		Type:                "l4-load-balance",
 		AddrType:            "ipv4",
 		Address:             "128.1.201.35",
 		PacketFwdMethod:     "NAT",
 		Port:                "80",
-		PortRange:           "0",
 		ConnectionLimit:     "10000",
 		ContentRouting:      "disable",
 		Warmup:              "0",
 		Warmrate:            "10",
 		ConnectionRateLimit: "0",
-		Log:                 "enable",
+		TrafficLog:          "enable",
 		Alone:               "enable",
 		Mkey:                "GOFORTI-VS",
 		Interface:           "port1",

@@ -51,8 +51,8 @@ type LoadbalanceVirtualServer struct {
 	ScriptingFlag        string `json:"scripting_flag"`
 	ScriptingList        string `json:"scripting_list"`
 	SourcePoolList       string `json:"source-pool-list"`
-	SslMirror            string `json:"ssl-mirror"`
-	SslMirrorIntf        string `json:"ssl-mirror-intf"`
+	SSLMirror            string `json:"ssl-mirror"`
+	SSLMirrorIntf        string `json:"ssl-mirror-intf"`
 	Status               string `json:"status"`
 	TrafficGroup         string `json:"traffic-group"`
 	TrafficLog           string `json:"traffic-log"`
