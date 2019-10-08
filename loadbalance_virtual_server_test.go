@@ -28,20 +28,18 @@ func TestClient_LoadbalanceCreateVirtualServerL4(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req := LoadbalanceVirtualServerReq{
+	req := LoadbalanceVirtualServer{
 		Status:              "enable",
 		Type:                "l4-load-balance",
 		AddrType:            "ipv4",
 		Address:             "128.1.201.35",
 		PacketFwdMethod:     "NAT",
 		Port:                "80",
-		PortRange:           "0",
 		ConnectionLimit:     "10000",
 		ContentRouting:      "disable",
 		Warmup:              "0",
 		Warmrate:            "10",
 		ConnectionRateLimit: "0",
-		Log:                 "enable",
 		Alone:               "enable",
 		Mkey:                "GOFORTI-VS",
 		Interface:           "port1",
@@ -66,25 +64,26 @@ func TestClient_LoadbalanceCreateVirtualServerL7(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req := LoadbalanceVirtualServerReq{
+	req := LoadbalanceVirtualServer{
 		Status:              "enable",
 		Type:                "l7-load-balance",
 		AddrType:            "ipv4",
 		Address:             "128.1.201.36",
 		Port:                "8443",
-		PortRange:           "0",
 		ConnectionLimit:     "10000",
 		ContentRouting:      "disable",
 		Warmup:              "0",
 		Warmrate:            "10",
 		ConnectionRateLimit: "0",
-		Log:                 "disable",
+		TrafficLog:          "disable",
 		Alone:               "enable",
 		Mkey:                "GOFORTI-VS",
 		Interface:           "port1",
 		Profile:             "LB_PROF_HTTP",
 		Method:              "LB_METHOD_ROUND_ROBIN",
 		Pool:                "GOFORTI_POOL",
+		Fortiview:           "disable",
+		PacketFwdMethod:     "NAT",
 	}
 
 	err = client.LoadbalanceCreateVirtualServer(req)
@@ -103,20 +102,19 @@ func TestClient_LoadbalanceUpdateVirtualServer(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req := LoadbalanceVirtualServerReq{
+	req := LoadbalanceVirtualServer{
 		Status:              "enable",
 		Type:                "l4-load-balance",
 		AddrType:            "ipv4",
 		Address:             "128.1.201.35",
 		PacketFwdMethod:     "NAT",
 		Port:                "80",
-		PortRange:           "0",
 		ConnectionLimit:     "10000",
 		ContentRouting:      "disable",
 		Warmup:              "0",
 		Warmrate:            "10",
 		ConnectionRateLimit: "0",
-		Log:                 "enable",
+		TrafficLog:          "enable",
 		Alone:               "enable",
 		Mkey:                "GOFORTI-VS",
 		Interface:           "port1",
