@@ -39,7 +39,7 @@ func TestLoadbalance(t *testing.T) {
 	}
 
 	// Create real server pool
-	reqCreateRealServerPool := LoadbalancePoolReq{
+	reqCreateRealServerPool := LoadbalancePool{
 		Mkey:                    "GOFORTI_POOL",
 		PoolType:                "ipv4",
 		HealthCheck:             "enable",
@@ -55,7 +55,7 @@ func TestLoadbalance(t *testing.T) {
 	}
 
 	// Update real server pool
-	reqUpdateRealServerPool := LoadbalancePoolReq{
+	reqUpdateRealServerPool := LoadbalancePool{
 		Mkey:                    "GOFORTI_POOL",
 		PoolType:                "ipv4",
 		HealthCheck:             "enable",

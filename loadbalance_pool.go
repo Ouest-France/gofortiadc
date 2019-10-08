@@ -8,90 +8,80 @@ import (
 	"io/ioutil"
 )
 
-// LoadbalancePoolReq represents a real server pool request
-type LoadbalancePoolReq struct {
-	Mkey                    string `json:"mkey"`
-	PoolType                string `json:"pool_type"`
-	HealthCheck             string `json:"health_check"`
-	HealthCheckRelationship string `json:"health_check_relationship"`
-	HealthCheckList         string `json:"health_check_list"`
-	RsProfile               string `json:"rs_profile"`
-}
-
-// LoadbalancePoolRes represents a real server pool response
-type LoadbalancePoolRes struct {
-	Mkey                    string                  `json:"mkey"`
-	PoolType                string                  `json:"pool_type"`
+// LoadbalancePool represents a real server pool request/response
+type LoadbalancePool struct {
 	HealthCheck             string                  `json:"health_check"`
-	HealthCheckRelationship string                  `json:"health_check_relationship"`
 	HealthCheckList         string                  `json:"health_check_list"`
+	HealthCheckRelationship string                  `json:"health_check_relationship"`
+	Mkey                    string                  `json:"mkey"`
+	PoolMember              []LoadbalancePoolMember `json:"pool_member,omitempty"`
+	PoolType                string                  `json:"pool_type"`
 	RsProfile               string                  `json:"rs_profile"`
-	PoolMember              []LoadbalancePoolMember `json:"pool_member"`
 }
 
 // LoadbalanceGetPools returns the list of all real server pools
-func (c *Client) LoadbalanceGetPools() ([]LoadbalancePoolRes, error) {
+func (c *Client) LoadbalanceGetPools() ([]LoadbalancePool, error) {
 
 	req, err := c.NewRequest("GET", fmt.Sprintf("%s/api/load_balance_pool", c.Address), nil)
 	if err != nil {
-		return []LoadbalancePoolRes{}, err
+		return []LoadbalancePool{}, err
 	}
 
 	res, err := c.Client.Do(req)
 	if err != nil {
-		return []LoadbalancePoolRes{}, err
+		return []LoadbalancePool{}, err
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		return []LoadbalancePoolRes{}, fmt.Errorf("failed to get pools list with status code: %d", res.StatusCode)
+		return []LoadbalancePool{}, fmt.Errorf("failed to get pools list with status code: %d", res.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return []LoadbalancePoolRes{}, err
+		return []LoadbalancePool{}, err
 	}
 
 	var LoadbalancePoolPayload struct {
-		Payload []LoadbalancePoolRes
+		Payload []LoadbalancePool
 	}
 	err = json.Unmarshal(body, &LoadbalancePoolPayload)
 	if err != nil {
-		return []LoadbalancePoolRes{}, err
+		return []LoadbalancePool{}, err
 	}
 
 	return LoadbalancePoolPayload.Payload, nil
 }
 
 // LoadbalanceGetPool returns a real server pool by name
-func (c *Client) LoadbalanceGetPool(name string) (LoadbalancePoolRes, error) {
+func (c *Client) LoadbalanceGetPool(name string) (LoadbalancePool, error) {
 
 	req, err := c.NewRequest("GET", fmt.Sprintf("%s/api/load_balance_pool", c.Address), nil)
 	if err != nil {
-		return LoadbalancePoolRes{}, err
+		return LoadbalancePool{}, err
 	}
 
 	res, err := c.Client.Do(req)
 	if err != nil {
-		return LoadbalancePoolRes{}, err
+		return LoadbalancePool{}, err
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		return LoadbalancePoolRes{}, fmt.Errorf("failed to get pool with status code: %d", res.StatusCode)
+		return LoadbalancePool{}, fmt.Errorf("failed to get pool with status code: %d", res.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return LoadbalancePoolRes{}, err
+		return LoadbalancePool{}, err
 	}
 
 	var LoadbalancePoolPayload struct {
-		Payload []LoadbalancePoolRes
+		Payload []LoadbalancePool
 	}
 	err = json.Unmarshal(body, &LoadbalancePoolPayload)
 	if err != nil {
-		return LoadbalancePoolRes{}, err
+		return LoadbalancePool{}, err
 	}
 
 	for _, pool := range LoadbalancePoolPayload.Payload {
@@ -100,11 +90,11 @@ func (c *Client) LoadbalanceGetPool(name string) (LoadbalancePoolRes, error) {
 		}
 	}
 
-	return LoadbalancePoolRes{}, fmt.Errorf("pool %s not found", name)
+	return LoadbalancePool{}, fmt.Errorf("pool %s not found", name)
 }
 
 // LoadbalanceCreatePool creates a new real server pool
-func (c *Client) LoadbalanceCreatePool(pool LoadbalancePoolReq) error {
+func (c *Client) LoadbalanceCreatePool(pool LoadbalancePool) error {
 
 	payloadJSON, err := json.Marshal(pool)
 	if err != nil {
@@ -145,7 +135,7 @@ func (c *Client) LoadbalanceCreatePool(pool LoadbalancePoolReq) error {
 }
 
 // LoadbalanceUpdatePool updates an existing real server pool
-func (c *Client) LoadbalanceUpdatePool(pool LoadbalancePoolReq) error {
+func (c *Client) LoadbalanceUpdatePool(pool LoadbalancePool) error {
 
 	payloadJSON, err := json.Marshal(pool)
 	if err != nil {

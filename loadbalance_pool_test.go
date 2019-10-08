@@ -45,7 +45,7 @@ func TestClient_LoadbalanceCreatePool(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req := LoadbalancePoolReq{
+	req := LoadbalancePool{
 		Mkey:                    "GOFORTI_POOL",
 		PoolType:                "ipv4",
 		HealthCheck:             "enable",
@@ -70,7 +70,7 @@ func TestClient_LoadbalanceUpdatePool(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	req := LoadbalancePoolReq{
+	req := LoadbalancePool{
 		Mkey:                    "GOFORTI_POOL",
 		PoolType:                "ipv4",
 		HealthCheck:             "enable",
