@@ -128,10 +128,18 @@ func createCertificateForm(name, password string, cert, key []byte) (form *bytes
 	w := multipart.NewWriter(&b)
 	defer w.Close()
 
-	w.WriteField("mkey", name)
-	w.WriteField("vdom", "global")
-	w.WriteField("type", "CertKey")
-	w.WriteField("passwd", password)
+	fields := map[string]string{
+		"mkey":   name,
+		"vdom":   "global",
+		"type":   "CertKey",
+		"passwd": password,
+	}
+	for field, value := range fields {
+		err := w.WriteField(field, value)
+		if err != nil {
+			return &b, contentType, err
+		}
+	}
 
 	certPart, err := w.CreateFormFile("cert", "tls.crt")
 	if err != nil {
