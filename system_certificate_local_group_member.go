@@ -139,7 +139,6 @@ func (c *Client) SystemUpdateLocalCertificateGroupMember(group, mkey string, lcg
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(body))
 
 	resJSON := struct{ Payload int }{}
 	err = json.Unmarshal(body, &resJSON)

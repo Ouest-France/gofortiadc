@@ -156,7 +156,6 @@ func (c *Client) LoadbalanceUpdateRealServer(rs LoadbalanceRealServer) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(body))
 
 	res := struct{ Payload int }{}
 	err = json.Unmarshal(body, &res)

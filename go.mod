@@ -1,3 +1,3 @@
 module github.com/Ouest-France/gofortiadc
 
-go 1.12
+go 1.14
