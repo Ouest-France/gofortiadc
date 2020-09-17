@@ -215,7 +215,6 @@ func (c *Client) LoadbalanceUpdateContentRoutingCondition(cr string, rs Loadbala
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(body))
 
 	resJSON := struct{ Payload int }{}
 	err = json.Unmarshal(body, &resJSON)

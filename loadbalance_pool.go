@@ -161,7 +161,6 @@ func (c *Client) LoadbalanceUpdatePool(pool LoadbalancePool) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(body))
 
 	resJSON := struct{ Payload int }{}
 	err = json.Unmarshal(body, &resJSON)
