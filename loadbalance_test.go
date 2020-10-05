@@ -2,13 +2,13 @@ package gofortiadc
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestLoadbalance(t *testing.T) {
 	client, err := NewClientHelper()
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err, "NewClientHelper")
 
 	// Create real server
 	reqCreateRealServer := LoadbalanceRealServer{
@@ -17,12 +17,15 @@ func TestLoadbalance(t *testing.T) {
 		Address6: "::",
 		Mkey:     "gofortirs01",
 	}
-	t.Logf("reqCreateRealServer: %+v", reqCreateRealServer)
 
 	err = client.LoadbalanceCreateRealServer(reqCreateRealServer)
-	if err != nil {
-		t.Fatalf("LoadbalanceCreateRealServer failed with error: %s", err)
-	}
+	require.NoError(t, err, "LoadbalanceCreateRealServer")
+
+	defer func() {
+		// Delete real server
+		err = client.LoadbalanceDeleteRealServer("gofortirs01")
+		require.NoError(t, err, "LoadbalanceDeleteRealServer")
+	}()
 
 	// Update real server
 	reqUpdateRealServer := LoadbalanceRealServer{
@@ -31,12 +34,9 @@ func TestLoadbalance(t *testing.T) {
 		Address6: "::",
 		Mkey:     "gofortirs01",
 	}
-	t.Logf("reqUpdateRealServer: %+v", reqUpdateRealServer)
 
 	err = client.LoadbalanceUpdateRealServer(reqUpdateRealServer)
-	if err != nil {
-		t.Fatalf("LoadbalanceUpdateRealServer failed with error: %s", err)
-	}
+	require.NoError(t, err, "LoadbalanceUpdateRealServer")
 
 	// Create real server pool
 	reqCreateRealServerPool := LoadbalancePool{
@@ -47,12 +47,15 @@ func TestLoadbalance(t *testing.T) {
 		HealthCheckList:         "LB_HLTHCK_HTTP LB_HLTHCK_HTTPS",
 		RsProfile:               "NONE",
 	}
-	t.Logf("reqCreateRealServerPool: %+v", reqCreateRealServerPool)
 
 	err = client.LoadbalanceCreatePool(reqCreateRealServerPool)
-	if err != nil {
-		t.Fatalf("LoadbalanceCreatePool failed with error: %s", err)
-	}
+	require.NoError(t, err, "LoadbalanceCreatePool")
+
+	defer func() {
+		// Delete real server pool
+		err = client.LoadbalanceDeletePool("GOFORTI_POOL")
+		require.NoError(t, err, "LoadbalanceDeletePool")
+	}()
 
 	// Update real server pool
 	reqUpdateRealServerPool := LoadbalancePool{
@@ -63,12 +66,9 @@ func TestLoadbalance(t *testing.T) {
 		HealthCheckList:         "LB_HLTHCK_HTTP",
 		RsProfile:               "NONE",
 	}
-	t.Logf("reqUpdateRealServerPool: %+v", reqUpdateRealServerPool)
 
 	err = client.LoadbalanceUpdatePool(reqUpdateRealServerPool)
-	if err != nil {
-		t.Fatalf("LoadbalanceUpdatePool failed with error: %s", err)
-	}
+	require.NoError(t, err, "LoadbalanceUpdatePool")
 
 	// Create real server pool member
 	reqCreateRealServerPoolMember := LoadbalancePoolMember{
@@ -95,12 +95,15 @@ func TestLoadbalance(t *testing.T) {
 		Warmup:                   "0",
 		Warmrate:                 "100",
 	}
-	t.Logf("reqCreateRealServerPoolMember: %+v", reqCreateRealServerPoolMember)
 
 	err = client.LoadbalanceCreatePoolMember("GOFORTI_POOL", reqCreateRealServerPoolMember)
-	if err != nil {
-		t.Fatalf("LoadbalanceCreatePoolMember failed with error: %s", err)
-	}
+	require.NoError(t, err, "LoadbalanceCreatePoolMember")
+
+	defer func() {
+		// Delete real server pool member
+		err = client.LoadbalanceDeletePoolMember("GOFORTI_POOL", "1")
+		require.NoError(t, err, "LoadbalanceDeletePoolMember")
+	}()
 
 	// Update real server pool member
 	reqUpdateRealServerPoolMember := LoadbalancePoolMember{
@@ -128,91 +131,269 @@ func TestLoadbalance(t *testing.T) {
 		Warmup:                   "0",
 		Warmrate:                 "100",
 	}
-	t.Logf("reqUpdateRealServerPoolMember: %+v", reqUpdateRealServerPoolMember)
 
 	err = client.LoadbalanceUpdatePoolMember("GOFORTI_POOL", "1", reqUpdateRealServerPoolMember)
-	if err != nil {
-		t.Fatalf("LoadbalanceUpdatePoolMember failed with error: %s", err)
-	}
+	require.NoError(t, err, "LoadbalanceUpdatePoolMember")
 
 	// Create virtual server
 	reqCreateVirtualServer := LoadbalanceVirtualServer{
-		Status:              "enable",
-		Type:                "l4-load-balance",
 		AddrType:            "ipv4",
 		Address:             "128.1.201.35",
-		PacketFwdMethod:     "NAT",
-		Port:                "80",
-		ConnectionLimit:     "10000",
-		ContentRouting:      "disable",
-		Warmup:              "0",
-		Warmrate:            "10",
-		ConnectionRateLimit: "0",
-		TrafficLog:          "enable",
 		Alone:               "enable",
-		Mkey:                "GOFORTI-VS",
+		ConnectionLimit:     "10000",
+		ConnectionRateLimit: "0",
+		ContentRewriting:    "disable",
+		ContentRouting:      "disable",
+		HTTP2HTTPS:          "disable",
 		Interface:           "port1",
-		Profile:             "LB_PROF_TCP",
 		Method:              "LB_METHOD_ROUND_ROBIN",
+		Mkey:                "GOFORTI-VS",
+		PacketFwdMethod:     "NAT",
 		Pool:                "GOFORTI_POOL",
-		HTTP2HTTPS:          "enable",
+		Port:                "80",
+		Profile:             "LB_PROF_TCP",
+		Status:              "enable",
+		TrafficLog:          "enable",
+		Type:                "l4-load-balance",
+		Warmrate:            "10",
+		Warmup:              "0",
 	}
-	t.Logf("reqCreateVirtualServer: %+v", reqCreateVirtualServer)
 
 	err = client.LoadbalanceCreateVirtualServer(reqCreateVirtualServer)
-	if err != nil {
-		t.Fatalf("LoadbalanceCreateVirtualServer failed with error: %s", err)
-	}
+	require.NoError(t, err, "LoadbalanceCreateVirtualServer")
+
+	defer func() {
+		// Delete virtual server
+		err = client.LoadbalanceDeleteVirtualServer("GOFORTI-VS")
+		require.NoError(t, err, "LoadbalanceDeleteVirtualServer")
+	}()
 
 	// Update virtual server
 	reqUpdateVirtualServer := LoadbalanceVirtualServer{
-		Status:              "enable",
-		Type:                "l4-load-balance",
 		AddrType:            "ipv4",
 		Address:             "128.1.201.35",
-		PacketFwdMethod:     "NAT",
-		Port:                "80",
-		ConnectionLimit:     "10000",
-		ContentRouting:      "disable",
-		Warmup:              "0",
-		Warmrate:            "10",
-		ConnectionRateLimit: "0",
-		TrafficLog:          "enable",
 		Alone:               "enable",
-		Mkey:                "GOFORTI-VS",
+		ConnectionLimit:     "10000",
+		ConnectionRateLimit: "0",
+		ContentRewriting:    "disable",
+		ContentRouting:      "disable",
 		Interface:           "port1",
-		Profile:             "LB_PROF_TCP",
 		Method:              "LB_METHOD_FASTEST_RESPONSE",
+		Mkey:                "GOFORTI-VS",
+		PacketFwdMethod:     "NAT",
 		Pool:                "GOFORTI_POOL",
+		Port:                "80",
+		Profile:             "LB_PROF_TCP",
+		Status:              "enable",
+		TrafficLog:          "enable",
+		Type:                "l4-load-balance",
+		Warmrate:            "10",
+		Warmup:              "0",
 	}
-	t.Logf("reqUpdateVirtualServer: %+v", reqUpdateVirtualServer)
 
 	err = client.LoadbalanceUpdateVirtualServer(reqUpdateVirtualServer)
-	if err != nil {
-		t.Fatalf("LoadbalanceUpdateVirtualServer failed with error: %s", err)
+	require.NoError(t, err, "LoadbalanceUpdateVirtualServer")
+
+	// List content rewritings
+	_, err = client.LoadbalanceGetContentRewritings()
+	require.NoError(t, err, "LoadbalanceGetContentRewritings")
+
+	// Create content rewriting
+	reqCW := LoadbalanceContentRewriting{
+		Mkey:           "gofortirw01",
+		ActionType:     "request",
+		URLStatus:      "enable",
+		URLContent:     "/url",
+		RefererStatus:  "enable",
+		RefererContent: "http://",
+		Redirect:       "redirect",
+		Location:       "http://",
+		HeaderName:     "header-name",
+		Comments:       "",
+		Action:         "rewrite_http_header",
+		HostStatus:     "enable",
+		HostContent:    "host",
 	}
 
-	// Delete virtual server
-	err = client.LoadbalanceDeleteVirtualServer("GOFORTI-VS")
-	if err != nil {
-		t.Fatalf("LoadbalanceDeleteVirtualServer failed with error: %s", err)
+	err = client.LoadbalanceCreateContentRewriting(reqCW)
+	require.NoError(t, err, "LoadbalanceCreateContentRewriting")
+
+	defer func() {
+		// Delete content rewriting
+		err = client.LoadbalanceDeleteContentRewriting("gofortirw01")
+		require.NoError(t, err, "LoadbalanceDeleteContentRewriting")
+	}()
+
+	// Get content rewriting
+	_, err = client.LoadbalanceGetContentRewriting("gofortirw01")
+	require.NoError(t, err, "LoadbalanceGetContentRewriting")
+
+	// Update content rewriting
+	reqCW = LoadbalanceContentRewriting{
+		Mkey:           "gofortirw01",
+		ActionType:     "request",
+		URLStatus:      "disable",
+		URLContent:     "/url",
+		RefererStatus:  "enable",
+		RefererContent: "http://foo.bar",
+		Redirect:       "redirect",
+		Location:       "http://",
+		HeaderName:     "header-name",
+		Comments:       "",
+		Action:         "rewrite_http_header",
+		HostStatus:     "disable",
+		HostContent:    "host",
 	}
 
-	// Delete real server pool member
-	err = client.LoadbalanceDeletePoolMember("GOFORTI_POOL", "1")
-	if err != nil {
-		t.Fatalf("LoadbalanceDeletePoolMember failed with error: %s", err)
+	err = client.LoadbalanceUpdateContentRewriting(reqCW)
+	require.NoError(t, err, "LoadbalanceUpdateContentRewriting")
+
+	// Get content rewriting conditions
+	_, err = client.LoadbalanceGetContentRewritingConditions("gofortirw01")
+	require.NoError(t, err, "LoadbalanceGetContentRewritingConditions")
+
+	// Create content rewriting condition
+	condReqCW := LoadbalanceContentRewritingCondition{
+		Mkey:       "",
+		Content:    "match",
+		Ignorecase: "enable",
+		Object:     "http-host-header",
+		Reverse:    "disable",
+		Type:       "string",
 	}
 
-	// Delete real server pool
-	err = client.LoadbalanceDeletePool("GOFORTI_POOL")
-	if err != nil {
-		t.Fatalf("LoadbalanceDeletePool failed with error: %s", err)
+	err = client.LoadbalanceCreateContentRewritingCondition("gofortirw01", condReqCW)
+	require.NoError(t, err, "LoadbalanceCreateContentRewritingCondition")
+
+	defer func() {
+		err = client.LoadbalanceDeleteContentRewritingCondition("gofortirw01", "1")
+		require.NoError(t, err, "LoadbalanceDeleteContentRewritingCondition")
+	}()
+
+	// Get content rewriting condition
+	_, err = client.LoadbalanceGetContentRewritingCondition("gofortirw01", "1")
+	require.NoError(t, err, "LoadbalanceGetContentRewritingCondition")
+
+	// Get content rewriting condition ID
+	condReqCW = LoadbalanceContentRewritingCondition{
+		Mkey:       "",
+		Content:    "match",
+		Ignorecase: "enable",
+		Object:     "http-host-header",
+		Reverse:    "disable",
+		Type:       "string",
 	}
 
-	// Delete real server
-	err = client.LoadbalanceDeleteRealServer("gofortirs01")
-	if err != nil {
-		t.Fatalf("LoadbalanceDeleteRealServer failed with error: %s", err)
+	id, err := client.LoadbalanceGetContentRewritingConditionID("gofortirw01", condReqCW)
+	require.NoError(t, err, "LoadbalanceGetContentRewritingConditionID")
+	require.Equal(t, "1", id, "LoadbalanceGetContentRewritingConditionID")
+
+	// Update content rewriting condition
+	condReqCW = LoadbalanceContentRewritingCondition{
+		Mkey:       "1",
+		Content:    "127.0.0.1",
+		Ignorecase: "disable",
+		Object:     "ip-source-address",
+		Reverse:    "disable",
+		Type:       "string",
 	}
+
+	err = client.LoadbalanceUpdateContentRewritingCondition("gofortirw01", condReqCW)
+
+	// Get content routings
+	_, err = client.LoadbalanceGetContentRoutings()
+	require.NoError(t, err, "LoadbalanceGetContentRoutings")
+
+	// Create content routing
+	reqCR := LoadbalanceContentRouting{
+		Mkey:                  "goforticr01",
+		Type:                  "l7-content-routing",
+		PacketFwdMethod:       "inherit",
+		SourcePoolList:        "",
+		Persistence:           "",
+		PersistenceInherit:    "enable",
+		Method:                "",
+		MethodInherit:         "enable",
+		ConnectionPool:        "",
+		ConnectionPoolInherit: "enable",
+		Pool:                  "GOFORTI_POOL",
+		IP:                    "0.0.0.0/0",
+		IP6:                   "::/0",
+		Comments:              "",
+		ScheduleList:          "disable",
+		SchedulePoolList:      "",
+	}
+
+	err = client.LoadbalanceCreateContentRouting(reqCR)
+	require.NoError(t, err, "LoadbalanceCreateContentRouting")
+
+	defer func() {
+		// Delete content routing
+		err = client.LoadbalanceDeleteContentRouting("goforticr01")
+		require.NoError(t, err, "LoadbalanceDeleteContentRouting")
+	}()
+
+	// Get content routing
+	_, err = client.LoadbalanceGetContentRouting("goforticr01")
+	require.NoError(t, err, "LoadbalanceGetContentRouting")
+
+	// Update content routing
+	reqCR = LoadbalanceContentRouting{
+		Mkey:                  "goforticr01",
+		Type:                  "l7-content-routing",
+		PacketFwdMethod:       "inherit",
+		SourcePoolList:        "",
+		Persistence:           "",
+		PersistenceInherit:    "enable",
+		Method:                "LB_METHOD_LEAST_CONNECTION",
+		MethodInherit:         "disable",
+		ConnectionPool:        "",
+		ConnectionPoolInherit: "enable",
+		Pool:                  "GOFORTI_POOL",
+		IP:                    "0.0.0.0/0",
+		IP6:                   "::/0",
+		Comments:              "",
+		ScheduleList:          "disable",
+		SchedulePoolList:      "",
+	}
+
+	err = client.LoadbalanceUpdateContentRouting(reqCR)
+	require.NoError(t, err, "LoadbalanceUpdateContentRouting")
+
+	// Get content routing conditions
+	_, err = client.LoadbalanceGetContentRoutingConditions("goforticr01")
+	require.NoError(t, err, "LoadbalanceGetContentRoutingConditions")
+
+	// Create content routing condition
+	condReqCR := LoadbalanceContentRoutingCondition{
+		Mkey:    "",
+		Object:  "http-host-header",
+		Type:    "string",
+		Content: "gofortiadc.fakedomain.local",
+		Reverse: "disable",
+	}
+
+	err = client.LoadbalanceCreateContentRoutingCondition("goforticr01", condReqCR)
+	require.NoError(t, err, "LoadbalanceCreateContentRoutingCondition")
+
+	defer func() {
+		// Delete content routing condition
+		err = client.LoadbalanceDeleteContentRoutingCondition("goforticr01", "1")
+		require.NoError(t, err, "LoadbalanceDeleteContentRoutingCondition")
+	}()
+
+	// Get content routing condition
+	_, err = client.LoadbalanceGetContentRoutingCondition("goforticr01", "1")
+	require.NoError(t, err, "LoadbalanceGetContentRoutingCondition")
+
+	// Update content routing condition
+	condReqCR = LoadbalanceContentRoutingCondition{
+		Mkey:    "1",
+		Object:  "http-request-url",
+		Type:    "string",
+		Content: "/goforti.html",
+		Reverse: "disable",
+	}
+
+	err = client.LoadbalanceUpdateContentRoutingCondition("goforticr01", condReqCR)
 }

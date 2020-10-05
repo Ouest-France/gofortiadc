@@ -1,18 +1,19 @@
 package gofortiadc
 
 import (
+	"os"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestSystemGlobal(t *testing.T) {
 
 	client, err := NewClientHelper()
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 
-	_, err = client.SystemGlobal()
-	if err != nil {
-		t.Fatal(err)
-	}
+	res, err := client.SystemGlobal()
+	require.NoError(t, err)
+
+	require.Equal(t, res.Hostname, os.Getenv("GOFORTI_HOSTNAME"))
 }
