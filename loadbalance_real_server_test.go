@@ -6,6 +6,9 @@ import (
 )
 
 func TestClient_LoadbalanceGetRealServers(t *testing.T) {
+	if os.Getenv("TEST_LENS") != "true" {
+		t.Skip()
+	}
 
 	client, err := NewClientHelper()
 	if err != nil {

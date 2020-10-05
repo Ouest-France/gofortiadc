@@ -2,24 +2,31 @@ package gofortiadc
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestSystemCertficate(t *testing.T) {
 	client, err := NewClientHelper()
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err, "NewClientHelper")
 
 	// Create local certificate
 	cert, key, err := generateCertificate()
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err, "generateCertificate")
 
 	err = client.SystemCreateLocalCertificate("gofortiadc", "", cert, key)
-	if err != nil {
-		t.Fatalf("SystemCreateLocalCertificate failed with error: %s", err)
-	}
+	require.NoError(t, err, "SystemCreateLocalCertificate")
+
+	defer func() {
+		// Delete local certificate
+		err = client.SystemDeleteLocalCertificate("gofortiadc")
+		require.NoError(t, err, "SystemDeleteLocalCertificate")
+	}()
+
+	// Get local certificate
+	certRes, err := client.SystemGetLocalCertificate("gofortiadc")
+	require.NoError(t, err, "SystemGetLocalCertificate")
+	require.Equal(t, "/O=Gofortiadc Test", certRes.Subject)
 
 	// Create local certificate group
 	group := SystemLocalCertificateGroup{
@@ -27,9 +34,17 @@ func TestSystemCertficate(t *testing.T) {
 	}
 
 	err = client.SystemCreateLocalCertificateGroup(group)
-	if err != nil {
-		t.Fatalf("SystemCreateLocalCertificateGroup failed with error: %s", err)
-	}
+	require.NoError(t, err, "SystemCreateLocalCertificateGroup")
+
+	defer func() {
+		// Delete local certificate group
+		err = client.SystemDeleteLocalCertificateGroup("goforti_group")
+		require.NoError(t, err, "SystemDeleteLocalCertificateGroup")
+	}()
+
+	// Get local certificate group
+	_, err = client.SystemGetLocalCertificateGroup(group.Mkey)
+	require.NoError(t, err, "SystemGetLocalCertificateGroup")
 
 	// Create local certificate group member
 	member := SystemLocalCertificateGroupMember{
@@ -38,9 +53,13 @@ func TestSystemCertficate(t *testing.T) {
 	}
 
 	err = client.SystemCreateLocalCertificateGroupMember("goforti_group", member)
-	if err != nil {
-		t.Fatalf("SystemCreateLocalCertificateGroupMember failed with error: %s", err)
-	}
+	require.NoError(t, err, "SystemCreateLocalCertificateGroupMember")
+
+	defer func() {
+		// Delete local certificate group member
+		err = client.SystemDeleteLocalCertificateGroupMember("goforti_group", "1")
+		require.NoError(t, err, "SystemDeleteLocalCertificateGroupMember")
+	}()
 
 	// Update local certificate group member
 	member = SystemLocalCertificateGroupMember{
@@ -51,25 +70,5 @@ func TestSystemCertficate(t *testing.T) {
 	}
 
 	err = client.SystemUpdateLocalCertificateGroupMember("goforti_group", "1", member)
-	if err != nil {
-		t.Fatalf("SystemUpdateLocalCertificateGroupMember failed with error: %s", err)
-	}
-
-	// Delete local certificate group member
-	err = client.SystemDeleteLocalCertificateGroupMember("goforti_group", "1")
-	if err != nil {
-		t.Fatalf("SystemDeleteLocalCertificateGroupMember failed with error: %s", err)
-	}
-
-	// Delete local certificate group
-	err = client.SystemDeleteLocalCertificateGroup("goforti_group")
-	if err != nil {
-		t.Fatalf("SystemDeleteLocalCertificateGroup failed with error: %s", err)
-	}
-
-	// Delete local certificate
-	err = client.SystemDeleteLocalCertificate("gofortiadc")
-	if err != nil {
-		t.Fatalf("SystemDeleteLocalCertificate failed with error: %s", err)
-	}
+	require.NoError(t, err, "SystemUpdateLocalCertificateGroupMember")
 }
