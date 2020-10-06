@@ -86,7 +86,7 @@ func (c *Client) LoadbalanceGetContentRoutingCondition(cr, mkey string) (Loadbal
 		}
 	}
 
-	return LoadbalanceContentRoutingCondition{}, fmt.Errorf("content routing condition %s not found", mkey)
+	return LoadbalanceContentRoutingCondition{}, fmt.Errorf("content routing condition %s not found: %w", mkey, ErrNotFound)
 }
 
 // LoadbalanceGetContentRoutingConditionID returns a content routing condition ID by request
@@ -136,7 +136,7 @@ func (c *Client) LoadbalanceGetContentRoutingConditionID(cr string, obj Loadbala
 		return rs.Mkey, nil
 	}
 
-	return "", fmt.Errorf("content routing condition ID %+v not found", obj)
+	return "", fmt.Errorf("content routing condition ID %+v not found: %w", obj, ErrNotFound)
 }
 
 // LoadbalanceCreateContentRoutingCondition creates a new content routing condition

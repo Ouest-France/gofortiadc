@@ -97,7 +97,7 @@ func (c *Client) LoadbalanceGetContentRouting(name string) (LoadbalanceContentRo
 		}
 	}
 
-	return LoadbalanceContentRouting{}, fmt.Errorf("content routing %s not found", name)
+	return LoadbalanceContentRouting{}, fmt.Errorf("content routing %s not found: %w", name, ErrNotFound)
 }
 
 // LoadbalanceCreateContentRouting creates a new content routing

@@ -90,7 +90,7 @@ func (c *Client) LoadbalanceGetPool(name string) (LoadbalancePool, error) {
 		}
 	}
 
-	return LoadbalancePool{}, fmt.Errorf("pool %s not found", name)
+	return LoadbalancePool{}, fmt.Errorf("pool %s not found: %w", name, ErrNotFound)
 }
 
 // LoadbalanceCreatePool creates a new real server pool

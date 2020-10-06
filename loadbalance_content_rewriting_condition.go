@@ -87,7 +87,7 @@ func (c *Client) LoadbalanceGetContentRewritingCondition(cr, mkey string) (Loadb
 		}
 	}
 
-	return LoadbalanceContentRewritingCondition{}, fmt.Errorf("content rewriting condition %s not found", mkey)
+	return LoadbalanceContentRewritingCondition{}, fmt.Errorf("content rewriting condition %s not found: %w", mkey, ErrNotFound)
 }
 
 // LoadbalanceGetContentRewritingConditionID returns a content rewriting condition ID by request
@@ -140,7 +140,7 @@ func (c *Client) LoadbalanceGetContentRewritingConditionID(cr string, obj Loadba
 		return cr.Mkey, nil
 	}
 
-	return "", fmt.Errorf("content rewriting condition ID %+v not found", obj)
+	return "", fmt.Errorf("content rewriting condition ID %+v not found: %w", obj, ErrNotFound)
 }
 
 // LoadbalanceCreateContentRewritingCondition creates a new content rewriting condition

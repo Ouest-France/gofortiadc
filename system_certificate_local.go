@@ -75,7 +75,7 @@ func (c *Client) SystemGetLocalCertificate(name string) (SystemLocalCertificate,
 		}
 	}
 
-	return SystemLocalCertificate{}, fmt.Errorf("local certificate %s not found", name)
+	return SystemLocalCertificate{}, fmt.Errorf("local certificate %s not found: %w", name, ErrNotFound)
 }
 
 // SystemCreateLocalCertificate creates a new local certificate

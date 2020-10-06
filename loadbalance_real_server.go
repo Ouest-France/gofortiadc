@@ -85,7 +85,7 @@ func (c *Client) LoadbalanceGetRealServer(name string) (LoadbalanceRealServer, e
 		}
 	}
 
-	return LoadbalanceRealServer{}, fmt.Errorf("real server %s not found", name)
+	return LoadbalanceRealServer{}, fmt.Errorf("real server %s not found: %w", name, ErrNotFound)
 }
 
 // LoadbalanceCreateRealServer creates a new real server
