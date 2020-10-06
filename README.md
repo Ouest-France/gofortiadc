@@ -8,7 +8,7 @@ A FortiADC API client enabling Go programs to interact with a Fortiadc server
 
 ## NOTE
 
-Tested with Fortiadc 5.1 API
+Tested with Fortiadc 5.4 API
 
 ## Example
 
