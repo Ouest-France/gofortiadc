@@ -134,7 +134,7 @@ func (c *Client) LoadbalanceGetVirtualServer(name string) (LoadbalanceVirtualSer
 		}
 	}
 
-	return LoadbalanceVirtualServer{}, fmt.Errorf("virtual server %s not found", name)
+	return LoadbalanceVirtualServer{}, fmt.Errorf("virtual server %s not found: %w", name, ErrNotFound)
 }
 
 // LoadbalanceCreateVirtualServer creates a new virtual server

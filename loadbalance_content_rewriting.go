@@ -94,7 +94,7 @@ func (c *Client) LoadbalanceGetContentRewriting(name string) (LoadbalanceContent
 		}
 	}
 
-	return LoadbalanceContentRewriting{}, fmt.Errorf("content rewriting %s not found", name)
+	return LoadbalanceContentRewriting{}, fmt.Errorf("content rewriting %s not found: %w", name, ErrNotFound)
 }
 
 // LoadbalanceCreateContentRewriting creates a new content rewriting

@@ -68,7 +68,7 @@ func (c *Client) SystemGetLocalCertificateGroupMember(group, mkey string) (Syste
 		}
 	}
 
-	return SystemLocalCertificateGroupMember{}, fmt.Errorf("local certificate group member %s not found", mkey)
+	return SystemLocalCertificateGroupMember{}, fmt.Errorf("local certificate group member %s not found: %w", mkey, ErrNotFound)
 }
 
 // SystemCreateLocalCertificateGroupMember creates a new local certificate group member

@@ -2,8 +2,11 @@ package gofortiadc
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 )
+
+var ErrNotFound = errors.New("not found")
 
 // List of ErrCode to ErrMsg from API path "http://myfortiadchost/api/platform/errMsg"
 var errMsg = `

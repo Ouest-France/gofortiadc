@@ -106,7 +106,7 @@ func (c *Client) LoadbalanceGetPoolMember(pool, mkey string) (LoadbalancePoolMem
 		}
 	}
 
-	return LoadbalancePoolMember{}, fmt.Errorf("pool member %s in pool %s not found", mkey, pool)
+	return LoadbalancePoolMember{}, fmt.Errorf("pool member %s in pool %s not found: %w", mkey, pool, ErrNotFound)
 }
 
 // LoadbalanceGetPoolMemberID returns a real server pool member id by name
@@ -145,7 +145,7 @@ func (c *Client) LoadbalanceGetPoolMemberID(pool, name string) (string, error) {
 		}
 	}
 
-	return "", fmt.Errorf("pool member %s in pool %s not found", name, pool)
+	return "", fmt.Errorf("pool member %s in pool %s not found: %w", name, pool, ErrNotFound)
 }
 
 // LoadbalanceCreatePoolMember creates a new real server pool member
