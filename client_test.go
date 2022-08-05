@@ -32,6 +32,13 @@ func TestClient_NewRequest(t *testing.T) {
 			path:   "/api/v1/status/system",
 			vdom:   "root",
 		},
+		{
+			method: "POST",
+			url:    "http://localhost:8080/api/load_balance_virtual_server?mkey=test",
+			host:   "localhost:8080",
+			path:   "/api/load_balance_virtual_server",
+			vdom:   "root",
+		},
 	}
 	// Iterate over test cases
 	for _, tc := range testCases {
@@ -53,12 +60,12 @@ func TestClient_NewRequest(t *testing.T) {
 
 		// Test if req.Host is set with the correct value
 		if req.Host != tc.host {
-			t.Errorf("req.Host is not set with the correct value")
+			t.Errorf("req.Host is not set with the correct value, expected %s, got %s", tc.host, req.Host)
 		}
 
 		// Test if req.Path is set with the correct value
 		if req.URL.Path != tc.path {
-			t.Errorf("req.Path is not set with the correct value")
+			t.Errorf("req.Path is not set with the correct value, expected: %s, got: %s", tc.path, req.URL.Path)
 		}
 
 		// Test if authorization header is set with the correct value
