@@ -14,6 +14,7 @@ func TestClient_NewRequest(t *testing.T) {
 		host   string
 		path   string
 		vdom   string
+		query  string
 	}
 
 	// Create test cases
@@ -24,6 +25,7 @@ func TestClient_NewRequest(t *testing.T) {
 			host:   "localhost:8080",
 			path:   "/api/v1/status/system",
 			vdom:   "",
+			query:  "",
 		},
 		{
 			method: "POST",
@@ -31,6 +33,7 @@ func TestClient_NewRequest(t *testing.T) {
 			host:   "localhost:8080",
 			path:   "/api/v1/status/system",
 			vdom:   "root",
+			query:  "vdom=root",
 		},
 		{
 			method: "POST",
@@ -38,6 +41,7 @@ func TestClient_NewRequest(t *testing.T) {
 			host:   "localhost:8080",
 			path:   "/api/load_balance_virtual_server",
 			vdom:   "root",
+			query:  "mkey=test&vdom=root",
 		},
 	}
 	// Iterate over test cases
@@ -81,6 +85,11 @@ func TestClient_NewRequest(t *testing.T) {
 		// Test if vdom parameter is not set when vdom is not set on client
 		if tc.vdom == "" && req.URL.Query().Get("vdom") != "" {
 			t.Errorf("vdom parameter is set")
+		}
+
+		// Test if query parameter is set with the correct value
+		if tc.query != "" && req.URL.RawQuery != tc.query {
+			t.Errorf("query parameter is not set with the correct value, expected: %s, got: %s", tc.query, req.URL.RawQuery)
 		}
 	}
 }
