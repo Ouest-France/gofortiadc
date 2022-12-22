@@ -99,3 +99,49 @@ func TestClient_Client_LoadbalanceDeleteRealServer(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestClient_LoadbalanceCreateRealServerFqdn(t *testing.T) {
+	if os.Getenv("TEST_LENS") != "true" {
+		t.Skip()
+	}
+
+	client, err := NewClientHelper()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req := LoadbalanceRealServer{
+		Status: "enable",
+		Type:   "fqdn",
+		FQDN:   "test.example.com",
+		Mkey:   "gofortirs01",
+	}
+
+	err = client.LoadbalanceCreateRealServer(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_LoadbalanceUpdateRealServerFqdn(t *testing.T) {
+	if os.Getenv("TEST_LENS") != "true" {
+		t.Skip()
+	}
+
+	client, err := NewClientHelper()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req := LoadbalanceRealServer{
+		Status: "enable",
+		Type:   "fqdn",
+		FQDN:   "test2.example.com",
+		Mkey:   "gofortirs01",
+	}
+
+	err = client.LoadbalanceUpdateRealServer(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

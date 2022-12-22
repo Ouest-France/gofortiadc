@@ -10,7 +10,9 @@ import (
 
 // LoadbalanceRealServer represents a real server request/response
 type LoadbalanceRealServer struct {
+	Type     string `json:"type"`
 	Status   string `json:"status"`
+	FQDN     string `json:"FQDN"`
 	Address  string `json:"address"`
 	Address6 string `json:"address6"`
 	Mkey     string `json:"mkey"`
