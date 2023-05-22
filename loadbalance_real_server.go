@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 )
 
 // LoadbalanceRealServer represents a real server request/response
@@ -35,7 +35,7 @@ func (c *Client) LoadbalanceGetRealServers() ([]LoadbalanceRealServer, error) {
 		return []LoadbalanceRealServer{}, fmt.Errorf("failed to get real servers list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return []LoadbalanceRealServer{}, err
 	}
@@ -68,7 +68,7 @@ func (c *Client) LoadbalanceGetRealServer(name string) (LoadbalanceRealServer, e
 		return LoadbalanceRealServer{}, fmt.Errorf("failed to get real servers list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return LoadbalanceRealServer{}, err
 	}
@@ -113,7 +113,7 @@ func (c *Client) LoadbalanceCreateRealServer(rs LoadbalanceRealServer) error {
 		return fmt.Errorf("real server creation failed with status code: %d", resp.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -154,7 +154,7 @@ func (c *Client) LoadbalanceUpdateRealServer(rs LoadbalanceRealServer) error {
 		return fmt.Errorf("real server update failed with status code: %d", resp.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -194,7 +194,7 @@ func (c *Client) LoadbalanceDeleteRealServer(name string) error {
 		return fmt.Errorf("real server deletion failed with status code: %d", resp.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}

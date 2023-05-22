@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"mime/multipart"
 )
 
@@ -45,7 +45,7 @@ func (c *Client) SystemGetLocalCertificates() ([]SystemLocalCertificate, error) 
 		return []SystemLocalCertificate{}, fmt.Errorf("failed to get local certificates list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return []SystemLocalCertificate{}, err
 	}
@@ -103,7 +103,7 @@ func (c *Client) SystemCreateLocalCertificate(name, password string, cert, key [
 		return fmt.Errorf("local certificate creation failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -183,7 +183,7 @@ func (c *Client) SystemDeleteLocalCertificate(name string) error {
 		return fmt.Errorf("local certificate deletion failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}

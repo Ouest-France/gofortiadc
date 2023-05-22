@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 )
 
 // LoadbalanceContentRewriting represents a content Rewriting request/response
@@ -42,7 +42,7 @@ func (c *Client) LoadbalanceGetContentRewritings() ([]LoadbalanceContentRewritin
 		return []LoadbalanceContentRewriting{}, fmt.Errorf("failed to get content rewriting list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return []LoadbalanceContentRewriting{}, err
 	}
@@ -75,7 +75,7 @@ func (c *Client) LoadbalanceGetContentRewriting(name string) (LoadbalanceContent
 		return LoadbalanceContentRewriting{}, fmt.Errorf("failed to get content rewriting list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return LoadbalanceContentRewriting{}, err
 	}
@@ -120,7 +120,7 @@ func (c *Client) LoadbalanceCreateContentRewriting(cr LoadbalanceContentRewritin
 		return fmt.Errorf("content rewriting creation failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ func (c *Client) LoadbalanceUpdateContentRewriting(cr LoadbalanceContentRewritin
 		return fmt.Errorf("content rewriting update failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -201,7 +201,7 @@ func (c *Client) LoadbalanceDeleteContentRewriting(name string) error {
 		return fmt.Errorf("content rewriting deletion failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}

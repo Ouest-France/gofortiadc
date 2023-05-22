@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 )
 
 // SystemLocalCertificateGroupMember represents a local certificate request/response
@@ -38,7 +38,7 @@ func (c *Client) SystemGetLocalCertificateGroupMembers(group string) ([]SystemLo
 		return []SystemLocalCertificateGroupMember{}, fmt.Errorf("failed to get local certificate group members list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return []SystemLocalCertificateGroupMember{}, err
 	}
@@ -94,7 +94,7 @@ func (c *Client) SystemCreateLocalCertificateGroupMember(group string, lcgm Syst
 		return fmt.Errorf("local certificate group member creation failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func (c *Client) SystemUpdateLocalCertificateGroupMember(group, mkey string, lcg
 		return fmt.Errorf("local certificate group member update failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -175,7 +175,7 @@ func (c *Client) SystemDeleteLocalCertificateGroupMember(group, mkey string) err
 		return fmt.Errorf("local certificate group member deletion failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}

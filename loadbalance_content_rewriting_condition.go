@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 )
 
 // LoadbalanceContentRewritingCondition represents a content rewriting condition request/response
@@ -35,7 +35,7 @@ func (c *Client) LoadbalanceGetContentRewritingConditions(cr string) ([]Loadbala
 		return []LoadbalanceContentRewritingCondition{}, fmt.Errorf("failed to get content rewriting conditions list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return []LoadbalanceContentRewritingCondition{}, err
 	}
@@ -68,7 +68,7 @@ func (c *Client) LoadbalanceGetContentRewritingCondition(cr, mkey string) (Loadb
 		return LoadbalanceContentRewritingCondition{}, fmt.Errorf("failed to get content rewriting conditions list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return LoadbalanceContentRewritingCondition{}, err
 	}
@@ -107,7 +107,7 @@ func (c *Client) LoadbalanceGetContentRewritingConditionID(cr string, obj Loadba
 		return "", fmt.Errorf("failed to get content rewriting conditions list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return "", err
 	}
@@ -170,7 +170,7 @@ func (c *Client) LoadbalanceCreateContentRewritingCondition(cr string, rc Loadba
 		return fmt.Errorf("content rewriting condition creation failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -215,7 +215,7 @@ func (c *Client) LoadbalanceUpdateContentRewritingCondition(cr string, rd Loadba
 		return fmt.Errorf("content rewriting condition update failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -259,7 +259,7 @@ func (c *Client) LoadbalanceDeleteContentRewritingCondition(cr, mkey string) err
 		return fmt.Errorf("content rewriting condition deletion failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}

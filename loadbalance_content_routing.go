@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 )
 
 // LoadbalanceContentRouting represents a content routing request/response
@@ -45,7 +45,7 @@ func (c *Client) LoadbalanceGetContentRoutings() ([]LoadbalanceContentRouting, e
 		return []LoadbalanceContentRouting{}, fmt.Errorf("failed to get content routing list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return []LoadbalanceContentRouting{}, err
 	}
@@ -78,7 +78,7 @@ func (c *Client) LoadbalanceGetContentRouting(name string) (LoadbalanceContentRo
 		return LoadbalanceContentRouting{}, fmt.Errorf("failed to get content routing list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return LoadbalanceContentRouting{}, err
 	}
@@ -123,7 +123,7 @@ func (c *Client) LoadbalanceCreateContentRouting(cr LoadbalanceContentRouting) e
 		return fmt.Errorf("content routing creation failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -164,7 +164,7 @@ func (c *Client) LoadbalanceUpdateContentRouting(rs LoadbalanceContentRouting) e
 		return fmt.Errorf("content routing update failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -204,7 +204,7 @@ func (c *Client) LoadbalanceDeleteContentRouting(name string) error {
 		return fmt.Errorf("content routing deletion failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
