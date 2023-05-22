@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 )
 
 // LoadbalanceContentRoutingCondition represents a content routing condition request/response
@@ -34,7 +34,7 @@ func (c *Client) LoadbalanceGetContentRoutingConditions(cr string) ([]Loadbalanc
 		return []LoadbalanceContentRoutingCondition{}, fmt.Errorf("failed to get content routing conditions list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return []LoadbalanceContentRoutingCondition{}, err
 	}
@@ -67,7 +67,7 @@ func (c *Client) LoadbalanceGetContentRoutingCondition(cr, mkey string) (Loadbal
 		return LoadbalanceContentRoutingCondition{}, fmt.Errorf("failed to get content routing conditions list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return LoadbalanceContentRoutingCondition{}, err
 	}
@@ -106,7 +106,7 @@ func (c *Client) LoadbalanceGetContentRoutingConditionID(cr string, obj Loadbala
 		return "", fmt.Errorf("failed to get content routing conditions list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return "", err
 	}
@@ -166,7 +166,7 @@ func (c *Client) LoadbalanceCreateContentRoutingCondition(cr string, rc Loadbala
 		return fmt.Errorf("content routing condition creation failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -211,7 +211,7 @@ func (c *Client) LoadbalanceUpdateContentRoutingCondition(cr string, rs Loadbala
 		return fmt.Errorf("content routing condition update failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -255,7 +255,7 @@ func (c *Client) LoadbalanceDeleteContentRoutingCondition(cr, mkey string) error
 		return fmt.Errorf("content routing condition deletion failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}

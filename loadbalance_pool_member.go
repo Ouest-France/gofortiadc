@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 )
 
 // LoadbalancePoolMember represents a real server pool member request/response
@@ -53,7 +53,7 @@ func (c *Client) LoadbalanceGetPoolMembers(pool string) ([]LoadbalancePoolMember
 		return []LoadbalancePoolMember{}, fmt.Errorf("failed to get pool members list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return []LoadbalancePoolMember{}, err
 	}
@@ -87,7 +87,7 @@ func (c *Client) LoadbalanceGetPoolMember(pool, mkey string) (LoadbalancePoolMem
 		return LoadbalancePoolMember{}, fmt.Errorf("failed to get pool member with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return LoadbalancePoolMember{}, err
 	}
@@ -126,7 +126,7 @@ func (c *Client) LoadbalanceGetPoolMemberID(pool, name string) (string, error) {
 		return "", fmt.Errorf("failed to get pool member with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return "", err
 	}
@@ -171,7 +171,7 @@ func (c *Client) LoadbalanceCreatePoolMember(pool string, member LoadbalancePool
 		return fmt.Errorf("pool member creation failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -212,7 +212,7 @@ func (c *Client) LoadbalanceUpdatePoolMember(pool, mkey string, member Loadbalan
 		return fmt.Errorf("pool member update failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -252,7 +252,7 @@ func (c *Client) LoadbalanceDeletePoolMember(pool, mkey string) error {
 		return fmt.Errorf("pool member deletion failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}

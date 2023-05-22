@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 )
 
 // LoadbalanceVirtualServer represents a virtual server request/response
@@ -81,7 +81,7 @@ func (c *Client) LoadbalanceGetVirtualServers() ([]LoadbalanceVirtualServer, err
 		return []LoadbalanceVirtualServer{}, fmt.Errorf("failed to get virtual servers list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return []LoadbalanceVirtualServer{}, err
 	}
@@ -115,7 +115,7 @@ func (c *Client) LoadbalanceGetVirtualServer(name string) (LoadbalanceVirtualSer
 		return LoadbalanceVirtualServer{}, errors.New("Non 200 return code")
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return LoadbalanceVirtualServer{}, err
 	}
@@ -160,7 +160,7 @@ func (c *Client) LoadbalanceCreateVirtualServer(vs LoadbalanceVirtualServer) err
 		return fmt.Errorf("virtual server creation failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -201,7 +201,7 @@ func (c *Client) LoadbalanceUpdateVirtualServer(vs LoadbalanceVirtualServer) err
 		return fmt.Errorf("virtual server update failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -241,7 +241,7 @@ func (c *Client) LoadbalanceDeleteVirtualServer(vs string) error {
 		return fmt.Errorf("virtual server deletion failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}

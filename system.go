@@ -3,7 +3,7 @@ package gofortiadc
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 )
 
 // SystemGlobalRes represents a system global status respoonse
@@ -48,7 +48,7 @@ func (c *Client) SystemGlobal() (SystemGlobalRes, error) {
 		return SystemGlobalRes{}, fmt.Errorf("Failed to get system endpoint with http code: %d", get.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(get.Body)
+	body, err := io.ReadAll(get.Body)
 	if err != nil {
 		return SystemGlobalRes{}, err
 	}

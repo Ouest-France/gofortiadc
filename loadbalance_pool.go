@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 )
 
 // LoadbalancePool represents a real server pool request/response
@@ -37,7 +37,7 @@ func (c *Client) LoadbalanceGetPools() ([]LoadbalancePool, error) {
 		return []LoadbalancePool{}, fmt.Errorf("failed to get pools list with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return []LoadbalancePool{}, err
 	}
@@ -71,7 +71,7 @@ func (c *Client) LoadbalanceGetPool(name string) (LoadbalancePool, error) {
 		return LoadbalancePool{}, fmt.Errorf("failed to get pool with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return LoadbalancePool{}, err
 	}
@@ -116,7 +116,7 @@ func (c *Client) LoadbalanceCreatePool(pool LoadbalancePool) error {
 		return fmt.Errorf("virtual server pool creation failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -157,7 +157,7 @@ func (c *Client) LoadbalanceUpdatePool(pool LoadbalancePool) error {
 		return fmt.Errorf("pool update failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
@@ -197,7 +197,7 @@ func (c *Client) LoadbalanceDeletePool(pool string) error {
 		return fmt.Errorf("deletion failed with status code: %d", res.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
